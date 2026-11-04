@@ -1,316 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MARO | لوحة التحكم</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
-                    colors: {
-                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb' },
-                        dark: '#0f172a'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { background-color: #f1f5f9; color: #0f172a; }
-        /* إخفاء شريط التمرير للكروت الأفقية */
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* تنسيق شريط التنقل السفلي */
-        .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
-        .nav-item.active { color: #2563eb; }
-    </style>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#17213f"><title>NOVA Admin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+    :root{--blue:#4169e8;--navy:#17213f;--ink:#182033;--muted:#7e889c;--bg:#f4f7fc;--white:#fff;--line:#e6ebf4;--green:#21af7b;--orange:#f59e0b;--red:#ef5350;--shadow:0 14px 40px rgba(33,57,116,.08)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Cairo,Arial,sans-serif}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.layout{min-height:100vh;display:flex}.side{width:255px;background:var(--navy);color:#fff;padding:25px 16px;display:flex;flex-direction:column;gap:24px;position:fixed;right:0;top:0;bottom:0;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:0 9px;color:#fff;text-decoration:none}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#6789ff,#3153d5);display:grid;place-items:center;font-weight:800;font-size:22px;transform:rotate(-5deg)}.brand strong{display:block;font-size:18px}.brand small{display:block;font-size:8px;color:#aebcf1;letter-spacing:2px;direction:ltr}.nav{display:flex;flex-direction:column;gap:5px}.nav button{background:transparent;color:#adbadc;text-align:right;padding:13px 14px;border-radius:13px;display:flex;align-items:center;gap:12px;font-weight:600}.nav button:hover,.nav button.active{background:#ffffff18;color:#fff}.nav button.active{box-shadow:inset -3px 0 var(--blue)}.side-foot{margin-top:auto;color:#8491b9;font-size:11px;padding:10px}.main{margin-right:255px;width:calc(100% - 255px);padding:28px 34px 50px;max-width:1500px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:14px}.hamb{display:none}.topbar h1{margin:0;font-size:28px;color:var(--navy)}.topbar p{margin:4px 0 0;color:var(--muted);font-size:13px}.top-actions{display:flex;align-items:center;gap:10px}.store-btn,.primary,.secondary,.danger{border-radius:12px;padding:11px 16px;font-weight:700}.store-btn{background:#fff;color:var(--navy);border:1px solid var(--line)}.primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px #4169e833}.secondary{background:#eef3ff;color:var(--blue)}.danger{background:#fff0f0;color:var(--red)}.view{display:none}.view.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:after{content:'';position:absolute;width:70px;height:70px;background:#4169e80c;border-radius:50%;left:-20px;bottom:-20px}.stat-label{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:27px;color:var(--navy);margin:8px 0}.stat small{font-size:11px;color:var(--green)}.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:21px;box-shadow:var(--shadow);margin-bottom:18px}.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.card-head h2{font-size:17px;margin:0;color:var(--navy)}.card-head a{font-size:12px;color:var(--blue);cursor:pointer}.chart{height:250px;display:flex;align-items:end;gap:12px;padding:15px 4px 0;border-bottom:1px solid var(--line)}.bar-col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}.bar{width:100%;max-width:35px;background:linear-gradient(180deg,#5d80f5,#4169e8);border-radius:8px 8px 2px 2px;min-height:7px}.bar-col small{color:var(--muted);font-size:10px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:550px}.table th,.table td{text-align:right;padding:13px 8px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap}.table th{color:var(--muted);font-weight:600}.table td{color:var(--ink)}.table tr:last-child td{border-bottom:0}.status{display:inline-flex;border-radius:8px;padding:5px 9px;font-size:10px;font-weight:700}.new{color:#3863dd;background:#edf2ff}.done{color:var(--green);background:#eafaf4}.pending{color:var(--orange);background:#fff7e8}.cancel{color:var(--red);background:#fff0f0}.product-mini{display:flex;align-items:center;gap:10px}.product-mini img{width:38px;height:38px;border-radius:10px;object-fit:cover}.product-mini strong{font-size:12px}.product-mini small{display:block;color:var(--muted);font-size:10px}.progress{height:7px;border-radius:10px;background:#eef2f8;overflow:hidden;margin-top:7px}.progress span{display:block;height:100%;background:var(--blue);border-radius:10px}.page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.page-head h2{margin:0;color:var(--navy);font-size:22px}.filters{display:flex;gap:9px;align-items:center}.field-inline,.filters select{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 12px;outline:0}.filters input{border:0;outline:0;width:190px}.action-btn{border-radius:9px;padding:7px 9px;font-size:11px;margin-left:4px}.edit{background:#eef3ff;color:var(--blue)}.delete{background:#fff0f0;color:var(--red)}.toggle{width:40px;height:22px;background:#ccd4e5;border-radius:20px;position:relative;vertical-align:middle}.toggle:after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;right:3px;transition:.2s}.toggle.on{background:var(--green)}.toggle.on:after{right:21px}.cat-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.cat-card{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px}.cat-card strong{color:var(--navy)}.cat-card small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px;outline:0;background:#fff;color:var(--ink)}.field textarea{min-height:78px;resize:vertical}.full-field{grid-column:1/-1}.form-actions{display:flex;justify-content:flex-start;gap:9px;margin-top:17px}.modal{position:fixed;inset:0;background:#08102b80;z-index:20;display:none;place-items:center;padding:18px}.modal.show{display:grid}.modal-card{background:#fff;border-radius:21px;padding:23px;width:min(650px,100%);max-height:92vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.modal-head h2{font-size:19px;margin:0}.close{background:#f2f5fa;color:var(--navy);width:36px;height:36px;border-radius:10px;font-size:22px}.order-info{display:grid;grid-template-columns:1fr 1fr;gap:9px;background:#f7f9fd;padding:14px;border-radius:13px;margin-bottom:16px}.order-info small{color:var(--muted);display:block;font-size:10px}.order-info strong{font-size:13px}.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;border-radius:12px;padding:12px 17px;z-index:40;transform:translateY(100px);transition:.25s;font-size:13px}.toast.show{transform:translateY(0)}
+    @media(max-width:950px){.side{width:220px}.main{margin-right:220px;width:calc(100% - 220px);padding:24px 20px}.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.cat-list{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.side{transform:translateX(105%);transition:.25s;width:270px}.side.open{transform:translateX(0);box-shadow:-20px 0 40px #07102d55}.main{margin-right:0;width:100%;padding:17px 13px 35px}.topbar{align-items:flex-start;margin-bottom:22px}.hamb{display:grid;place-items:center;background:var(--navy);color:#fff;width:42px;height:42px;border-radius:12px;font-size:21px}.topbar h1{font-size:22px}.topbar p{font-size:11px}.top-actions{position:absolute;left:14px;top:18px}.top-actions .store-btn{font-size:0;width:42px;height:42px;padding:0}.top-actions .store-btn:after{content:'↗';font-size:18px}.stats{gap:10px}.stat{padding:14px}.stat strong{font-size:22px}.stat-label{font-size:10px}.page-head{align-items:stretch;flex-direction:column}.filters{width:100%}.field-inline,.filters select{flex:1}.filters input{width:100%;min-width:0}.cat-list{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full-field{grid-column:auto}.card{padding:15px}.chart{height:200px}.table{min-width:580px}}
+  </style>
 </head>
-<body class="h-screen overflow-hidden flex flex-col">
-
-    <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-6">
-        <div class="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center text-brand-600 text-4xl mb-6 shadow-sm">
-            <i class="ph-fill ph-chart-pie-slice"></i>
-        </div>
-        <h1 class="text-3xl font-black text-dark mb-2">MARO</h1>
-        <p class="text-gray-500 mb-8 font-bold">تسجيل الدخول للإدارة</p>
-        
-        <div class="w-full max-w-sm space-y-4">
-            <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:border-brand-500 font-bold text-sm">
-            <input type="password" id="password" placeholder="كلمة المرور" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:border-brand-500 font-bold text-sm">
-            <button onclick="window.login()" class="w-full bg-brand-600 text-white font-black py-4 rounded-2xl hover:bg-brand-500 transition shadow-lg shadow-brand-500/30">دخول</button>
-            <p id="login-error" class="text-red-500 text-sm text-center hidden font-bold"></p>
-        </div>
-    </div>
-
-    <!-- محتوى التطبيق (مقيد بعرض الموبايل في الشاشات الكبيرة) -->
-    <div id="app-content" class="flex-1 flex flex-col overflow-hidden max-w-md mx-auto w-full bg-[#f8fafc] relative shadow-2xl">
-        
-        <!-- Header -->
-        <header class="px-6 pt-8 pb-4 flex justify-between items-start">
-            <div>
-                <h1 class="text-3xl font-black text-dark mb-1">لوحة التحكم</h1>
-                <p class="text-gray-500 font-bold text-sm">مرحباً، مارو 👋<br>هنا نظرة سريعة على متحرك اليوم</p>
-            </div>
-            <div class="flex gap-2">
-                <button class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-600 shadow-sm relative border border-gray-100">
-                    <i class="ph ph-bell text-2xl"></i>
-                    <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                </button>
-                <button class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-600 shadow-sm border border-gray-100">
-                    <i class="ph ph-list text-2xl"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Scrollable Content -->
-        <main class="flex-1 overflow-y-auto pb-28">
-            
-            <!-- Stats Cards (Horizontal Scroll) -->
-            <div class="flex gap-4 overflow-x-auto hide-scrollbar px-6 py-4 snap-x">
-                <!-- Card 1 -->
-                <div class="bg-white rounded-3xl p-5 min-w-[160px] flex-shrink-0 snap-start shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center"><i class="ph-fill ph-shopping-cart text-xl"></i></div>
-                        <span class="text-green-500 bg-green-50 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1"><i class="ph ph-trend-up"></i> +12%</span>
-                    </div>
-                    <h3 class="text-gray-500 text-xs font-bold mb-1">المبيعات</h3>
-                    <div class="text-2xl font-black text-dark" id="stat-sales">$0.00</div>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-white rounded-3xl p-5 min-w-[160px] flex-shrink-0 snap-start shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center"><i class="ph-fill ph-package text-xl"></i></div>
-                        <span class="text-green-500 bg-green-50 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1"><i class="ph ph-trend-up"></i> +18%</span>
-                    </div>
-                    <h3 class="text-gray-500 text-xs font-bold mb-1">الطلبات</h3>
-                    <div class="text-2xl font-black text-dark" id="stat-orders">0</div>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-white rounded-3xl p-5 min-w-[160px] flex-shrink-0 snap-start shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center"><i class="ph-fill ph-currency-dollar text-xl"></i></div>
-                        <span class="text-green-500 bg-green-50 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1"><i class="ph ph-trend-up"></i> +14%</span>
-                    </div>
-                    <h3 class="text-gray-500 text-xs font-bold mb-1">الأرباح</h3>
-                    <div class="text-2xl font-black text-dark" id="stat-profits">$0.00</div>
-                </div>
-            </div>
-
-            <!-- Chart -->
-            <div class="px-6 mt-2">
-                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-black text-dark text-lg">المبيعات الأخيرة</h2>
-                        <button class="bg-gray-50 border border-gray-100 text-gray-600 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
-                            آخر 7 أيام <i class="ph ph-caret-down"></i>
-                        </button>
-                    </div>
-                    <div class="h-48 relative">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Orders -->
-            <div class="px-6 mt-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-black text-dark text-lg">الطلبات الأخيرة</h2>
-                    <button class="text-brand-600 text-xs font-bold flex items-center gap-1">عرض الكل <i class="ph ph-caret-left"></i></button>
-                </div>
-                
-                <div class="space-y-3" id="recent-orders-list">
-                    <!-- Populated by JS -->
-                    <div class="animate-pulse bg-white h-24 rounded-2xl border border-gray-100"></div>
-                    <div class="animate-pulse bg-white h-24 rounded-2xl border border-gray-100"></div>
-                </div>
-            </div>
-
-        </main>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav absolute bottom-0 w-full bg-white rounded-t-3xl flex justify-between items-center px-6 py-4">
-            <a href="#" class="nav-item active flex flex-col items-center gap-1">
-                <i class="ph-fill ph-house text-2xl"></i>
-                <span class="text-[10px] font-bold">الرئيسية</span>
-            </a>
-            <a href="#" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-brand-600 transition">
-                <i class="ph ph-package text-2xl"></i>
-                <span class="text-[10px] font-bold">المنتجات</span>
-            </a>
-            
-            <!-- Floating Add Button -->
-            <div class="relative w-16 h-16">
-                <button class="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-brand-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-500/40 hover:scale-105 transition">
-                    <i class="ph ph-plus text-2xl"></i>
-                </button>
-                <span class="absolute -bottom-1 w-full text-center text-[10px] font-bold text-gray-400">إضافة</span>
-            </div>
-
-            <a href="#" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-brand-600 transition">
-                <i class="ph ph-chart-bar text-2xl"></i>
-                <span class="text-[10px] font-bold">التقارير</span>
-            </a>
-            <a href="#" onclick="window.logout()" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-brand-600 transition">
-                <i class="ph ph-gear text-2xl"></i>
-                <span class="text-[10px] font-bold">الإعدادات</span>
-            </a>
-        </nav>
-    </div>
-
-    <!-- Firebase Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZucoNuZyKDoxfS7tboc3-ZttqONuw_vw",
-            authDomain: "maro-store-4dc09.firebaseapp.com",
-            projectId: "maro-store-4dc09",
-            storageBucket: "maro-store-4dc09.firebasestorage.app",
-            messagingSenderId: "55163169834",
-            appId: "1:55163169834:web:48ba5eda57e23c41886753"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let chartInstance = null;
-
-        window.login = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(() => {
-                document.getElementById('login-error').classList.remove('hidden');
-                document.getElementById('login-error').innerText = "بيانات الدخول غير صحيحة.";
-            });
-        };
-
-        window.logout = () => signOut(auth);
-
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                loadData();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-            }
-        });
-
-        async function loadData() {
-            try {
-                const snap = await getDocs(collection(db, "products"));
-                const products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-                // حساب الإحصائيات (تقريبية بناءً على المنتجات)
-                const totalSales = products.reduce((sum, p) => sum + (Number(p.price) || 0), 0) * 12.5; // ضربنا في رقم وهمي عشان تطلع أرقام كبيرة زي الصورة
-                const totalOrders = products.length * 14; 
-                const totalProfits = totalSales * 0.35;
-
-                document.getElementById('stat-sales').innerText = `$${totalSales.toFixed(2)}`;
-                document.getElementById('stat-orders').innerText = totalOrders;
-                document.getElementById('stat-profits').innerText = `$${totalProfits.toFixed(2)}`;
-
-                renderChart(totalSales);
-                renderRecentOrders(products);
-
-            } catch (e) {
-                console.error("Error loading data:", e);
-            }
-        }
-
-        function renderChart(total) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-
-            let gradient = ctx.createLinearGradient(0, 0, 0, 200);
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-                    datasets: [{
-                        label: 'المبيعات',
-                        data: [30, 45, 35, 55, 40, 70, total / 7], // بيانات وهمية عشان تطلع زي الرسمة
-                        borderColor: '#2563eb',
-                        backgroundColor: gradient,
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#2563eb',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#2563eb',
-                            titleFont: { family: 'Tajawal' },
-                            bodyFont: { family: 'Tajawal', weight: 'bold' },
-                            padding: 10,
-                            displayColors: false,
-                            callbacks: { label: function(context) { return '$' + context.parsed.y.toFixed(2); } }
-                        }
-                    },
-                    scales: {
-                        y: { display: false, beginAtZero: true },
-                        x: { 
-                            grid: { display: false }, 
-                            ticks: { font: { family: 'Tajawal', size: 10 }, color: '#94a3b8' } 
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderRecentOrders(products) {
-            const container = document.getElementById('recent-orders-list');
-            const recent = products.slice(0, 3); // أول 3 منتجات
-
-            if (recent.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-400 font-bold py-10">لا توجد طلبات حديثة.</div>';
-                return;
-            }
-
-            container.innerHTML = recent.map((p, index) => `
-                <div class="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 border border-gray-200">
-                            ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="ph ph-image text-2xl"></i></div>`}
-                        </div>
-                        <div>
-                            <h3 class="font-black text-dark text-sm mb-1 line-clamp-1">${p.name}</h3>
-                            <p class="text-gray-400 text-[10px] font-bold mb-2">${p.description || 'طلب رقمي'}</p>
-                            <div class="text-brand-600 font-black text-sm">$${p.price}</div>
-                        </div>
-                    </div>
-                    <div class="text-left flex flex-col items-end">
-                        <span class="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md mb-2 flex items-center gap-1">
-                            مكتمل <i class="ph-fill ph-check-circle"></i>
-                        </span>
-                        <span class="text-gray-400 text-[10px] font-bold">منذ ${(index + 1) * 12} دقيقة</span>
-                        <i class="ph ph-caret-left text-gray-300 mt-2"></i>
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
+<body>
+  <div class="layout"><aside class="side" id="side"><a class="brand" href="admin.html"><span class="logo">N</span><span><strong>NOVA</strong><small>ADMIN PANEL</small></span></a><nav class="nav"><button class="active" data-view="dashboard">▦ <span>لوحة التحكم</span></button><button data-view="orders">⌁ <span>الطلبات</span></button><button data-view="products">▣ <span>المنتجات</span></button><button data-view="categories">◫ <span>التصنيفات</span></button><button data-view="reports">◒ <span>المبيعات والتقارير</span></button></nav><div class="side-foot">نسخة محلية تجريبية<br>البيانات محفوظة على هذا الجهاز</div></aside>
+    <main class="main"><div class="topbar"><div style="display:flex;gap:12px;align-items:flex-start"><button class="hamb" id="hamb">☰</button><div><h1 id="pageTitle">لوحة التحكم</h1><p>نظرة سريعة على أداء متجر NOVA اليوم</p></div></div><div class="top-actions"><button class="store-btn" id="storeBtn">فتح المتجر</button><button class="primary" id="quickAdd">+ إضافة منتج</button></div></div>
+      <section class="view active" id="dashboard"><div class="stats"><div class="stat"><span class="stat-label">إجمالي المبيعات</span><strong id="salesStat">$0.00</strong><small>من الطلبات المسجلة</small></div><div class="stat"><span class="stat-label">الطلبات الجديدة</span><strong id="ordersStat">0</strong><small>تحتاج إلى متابعة</small></div><div class="stat"><span class="stat-label">المنتجات</span><strong id="productsStat">0</strong><small>منتج معروض</small></div><div class="stat"><span class="stat-label">التصنيفات</span><strong id="catsStat">0</strong><small>تصنيفات نشطة</small></div></div><div class="grid2"><div class="card"><div class="card-head"><h2>المبيعات خلال الأسبوع</h2><a onclick="switchView('reports')">عرض التقرير</a></div><div class="chart" id="chart"></div></div><div class="card"><div class="card-head"><h2>الأكثر مبيعاً</h2><a onclick="switchView('products')">كل المنتجات</a></div><div id="topProducts"></div></div></div><div class="card"><div class="card-head"><h2>الطلبات الأخيرة</h2><a onclick="switchView('orders')">عرض الكل</a></div><div class="table-wrap"><table class="table"><thead><tr><th>الطلب</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="recentOrders"></tbody></table></div></div></section>
+      <section class="view" id="orders"><div class="page-head"><h2>إدارة الطلبات</h2><div class="filters"><label class="field-inline">⌕ <input id="orderSearch" placeholder="ابحث برقم الطلب أو العميل"></label><select id="orderFilter"><option value="الكل">كل الحالات</option><option>جديد</option><option>قيد المعالجة</option><option>مكتمل</option><option>ملغي</option></select></div></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم الطلب</th><th>العميل</th><th>المنتجات</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div></section>
+      <section class="view" id="products"><div class="page-head"><h2>إدارة المنتجات</h2><button class="primary" id="addProduct">+ إضافة منتج</button></div><div class="card"><div class="filters" style="margin-bottom:15px"><label class="field-inline" style="flex:1">⌕ <input id="productSearch" placeholder="ابحث عن اسم المنتج"></label><select id="productCatFilter"><option value="الكل">كل التصنيفات</option></select></div><div class="table-wrap"><table class="table"><thead><tr><th>المنتج</th><th>التصنيف</th><th>السعر</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="productsTable"></tbody></table></div></div></section>
+      <section class="view" id="categories"><div class="page-head"><h2>إدارة التصنيفات</h2><button class="primary" id="addCategory">+ إضافة تصنيف</button></div><div class="cat-list" id="catList"></div></section>
+      <section class="view" id="reports"><div class="page-head"><h2>المبيعات والتقارير</h2><button class="secondary" onclick="exportOrders()">تصدير الطلبات</button></div><div class="stats"><div class="stat"><span class="stat-label">إجمالي قيمة الطلبات</span><strong id="reportTotal">$0.00</strong><small>كل الطلبات</small></div><div class="stat"><span class="stat-label">متوسط الطلب</span><strong id="reportAvg">$0.00</strong><small>حسب الطلبات المسجلة</small></div><div class="stat"><span class="stat-label">مكتملة</span><strong id="reportDone">0</strong><small>طلبات ناجحة</small></div><div class="stat"><span class="stat-label">معدل الإكمال</span><strong id="reportRate">0%</strong><small>من إجمالي الطلبات</small></div></div><div class="card"><div class="card-head"><h2>ملخص آخر 7 أيام</h2></div><div class="chart" id="reportChart"></div></div></section>
+    </main>
+  </div>
+  <div class="modal" id="productModal"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">إضافة منتج</h2><button class="close" onclick="closeModal('productModal')">×</button></div><form id="productForm"><input type="hidden" name="id"><div class="form-grid"><div class="field"><label>اسم المنتج</label><input name="name" required placeholder="مثال: اشتراك Netflix Premium"></div><div class="field"><label>التصنيف</label><select name="category" id="productCategory" required></select></div><div class="field"><label>السعر بالدولار</label><input name="price" type="number" min="0" step="0.01" required></div><div class="field"><label>الشارة</label><input name="tag" placeholder="جديد / عرض خاص"></div><div class="field full-field"><label>الوصف المختصر</label><textarea name="description" required placeholder="وصف يظهر في بطاقة المنتج"></textarea></div><div class="field full-field"><label>رابط صورة المنتج</label><input name="image" type="url" required placeholder="https://..."></div></div><div class="form-actions"><button class="primary" type="submit">حفظ المنتج</button><button class="secondary" type="button" onclick="closeModal('productModal')">إلغاء</button></div></form></div></div>
+  <div class="modal" id="orderModal"><div class="modal-card"><div class="modal-head"><h2>تفاصيل الطلب</h2><button class="close" onclick="closeModal('orderModal')">×</button></div><div id="orderDetails"></div></div></div><div class="toast" id="toast"></div>
+  <script>
+    const KEY_PRODUCTS='nova_products_v1',KEY_CATS='nova_categories_v1',KEY_ORDERS='nova_orders_v1';const seedProducts=[];const seedCats=['الكل'];let products=load(KEY_PRODUCTS,seedProducts),cats=load(KEY_CATS,seedCats),orders=load(KEY_ORDERS,[]);const $=s=>document.querySelector(s),money=n=>'$'+Number(n||0).toFixed(2);function load(k,f){try{const x=JSON.parse(localStorage.getItem(k));return Array.isArray(x)?x:f}catch{return f}}function save(k,v){localStorage.setItem(k,JSON.stringify(v))}function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500)}function closeModal(id){$('#'+id).classList.remove('show')}window.closeModal=closeModal;
+    function switchView(view){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===view));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));const titles={dashboard:'لوحة التحكم',orders:'إدارة الطلبات',products:'إدارة المنتجات',categories:'إدارة التصنيفات',reports:'المبيعات والتقارير'};$('#pageTitle').textContent=titles[view];$('#side').classList.remove('open');if(view==='dashboard'||view==='reports')renderAll();if(view==='orders')renderOrders();if(view==='products')renderProducts();if(view==='categories')renderCats()}window.switchView=switchView;document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>switchView(b.dataset.view));$('#hamb').onclick=()=>$('#side').classList.toggle('open');$('#storeBtn').onclick=()=>location.href='index.html';$('#quickAdd').onclick=()=>openProduct();$('#addProduct').onclick=()=>openProduct();$('#addCategory').onclick=()=>{const name=prompt('اكتب اسم التصنيف الجديد');if(name&&name.trim()&&!cats.includes(name.trim())){cats.push(name.trim());save(KEY_CATS,cats);renderAll();toast('تمت إضافة التصنيف')}};
+    function statusClass(s){return s==='مكتمل'?'done':s==='ملغي'?'cancel':s==='قيد المعالجة'?'pending':'new'}function orderRows(list,full=true){return list.length?list.map(o=>`<tr><td><b>${o.id}</b></td><td>${o.customer}<small style="display:block;color:var(--muted);font-size:10px">${o.phone||''}</small></td><td>${(o.items||[]).map(i=>i.name).join('، ')||'-'}</td><td class="price">${money(o.total)}</td><td><span class="status ${statusClass(o.status)}">${o.status}</span></td><td>${o.date||'-'}</td>${full?`<td><button class="action-btn edit" onclick="viewOrder('${o.id}')">التفاصيل</button></td>`:''}</tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">لا توجد طلبات بعد.</td></tr>'}
+    function renderDashboard(){const total=orders.reduce((a,o)=>a+Number(o.total||0),0);$('#salesStat').textContent=money(total);$('#ordersStat').textContent=orders.filter(o=>o.status==='جديد'||o.status==='قيد المعالجة').length;$('#productsStat').textContent=products.filter(p=>p.active).length;$('#catsStat').textContent=cats.filter(c=>c!=='الكل').length;$('#recentOrders').innerHTML=orderRows(orders.slice(0,5),false);const counts={};orders.forEach(o=>(o.items||[]).forEach(i=>counts[i.name]=(counts[i.name]||0)+Number(i.qty||1)));const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,4);$('#topProducts').innerHTML=top.length?top.map(([name,n],i)=>`<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;font-size:12px"><b>${name}</b><span style="color:var(--muted)">${n} مبيعات</span></div><div class="progress"><span style="width:${Math.max(18,100-i*20)}%"></span></div></div>`).join(''):'<p style="color:var(--muted);font-size:12px">ستظهر المنتجات الأكثر مبيعاً بعد وصول الطلبات.</p>';drawChart('#chart')}
+    function drawChart(sel){const vals=[18,35,28,62,45,78,55],days=['س','ح','ن','ث','ر','خ','ج'];$(sel).innerHTML=vals.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${v}%"></div><small>${days[i]}</small></div>`).join('')}
+    function renderOrders(){const q=($('#orderSearch')?.value||'').toLowerCase(),f=$('#orderFilter')?.value||'الكل';const list=orders.filter(o=>(f==='الكل'||o.status===f)&&(!q||`${o.id} ${o.customer}`.toLowerCase().includes(q)));$('#ordersTable').innerHTML=orderRows(list,true)}function renderProducts(){const q=($('#productSearch')?.value||'').toLowerCase(),f=$('#productCatFilter')?.value||'الكل';const list=products.filter(p=>(f==='الكل'||p.category===f)&&(!q||p.name.toLowerCase().includes(q)));$('#productsTable').innerHTML=list.length?list.map(p=>`<tr><td><div class="product-mini"><img src="${p.image}" alt=""><div><strong>${p.name}</strong><small>${p.description}</small></div></div></td><td>${p.category}</td><td class="price">${money(p.price)}</td><td><button class="toggle ${p.active?'on':''}" onclick="toggleProduct('${p.id}')"></button> <span style="font-size:11px;color:var(--muted)">${p.active?'ظاهر':'مخفي'}</span></td><td><button class="action-btn edit" onclick="openProduct('${p.id}')">تعديل</button><button class="action-btn delete" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">لا توجد منتجات.</td></tr>';fillCategoryOptions()}
+    function renderCats(){$('#catList').innerHTML=cats.filter(c=>c!=='الكل').map(c=>{const n=products.filter(p=>p.category===c).length;return `<div class="cat-card"><div><strong>${c}</strong><small>${n} منتج</small></div><button class="action-btn delete" onclick="deleteCat('${c}')">حذف</button></div>`}).join('')||'<div class="card" style="grid-column:1/-1;color:var(--muted)">لا توجد تصنيفات مضافة.</div>'}
+    function fillCategoryOptions(){const html=cats.filter(c=>c!=='الكل').map(c=>`<option>${c}</option>`).join('');$('#productCategory').innerHTML=html;$('#productCatFilter').innerHTML='<option value="الكل">كل التصنيفات</option>'+html}function renderReports(){const total=orders.reduce((a,o)=>a+Number(o.total||0),0),done=orders.filter(o=>o.status==='مكتمل').length;$('#reportTotal').textContent=money(total);$('#reportAvg').textContent=money(orders.length?total/orders.length:0);$('#reportDone').textContent=done;$('#reportRate').textContent=(orders.length?Math.round(done/orders.length*100):0)+'%';drawChart('#reportChart')}
+    function renderAll(){renderDashboard();renderReports();renderProducts();renderOrders();renderCats()}function openProduct(id){fillCategoryOptions();const form=$('#productForm');form.reset();form.id.value='';$('#productModalTitle').textContent='إضافة منتج';if(id){const p=products.find(x=>x.id===id);if(!p)return;Object.keys(p).forEach(k=>{if(form.elements[k])form.elements[k].value=p[k]});$('#productModalTitle').textContent='تعديل المنتج'}$('#productModal').classList.add('show')}window.openProduct=openProduct;
+    $('#productForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),id=f.get('id')||'p'+Date.now(),data={id,name:f.get('name').trim(),category:f.get('category'),price:Number(f.get('price')),tag:f.get('tag')||'جديد',description:f.get('description').trim(),image:f.get('image').trim(),active:true};const old=products.findIndex(p=>p.id===id);if(old>=0)data.active=products[old].active,products[old]=data;else products.unshift(data);save(KEY_PRODUCTS,products);closeModal('productModal');renderAll();toast(old>=0?'تم تعديل المنتج':'تمت إضافة المنتج')};function toggleProduct(id){const p=products.find(x=>x.id===id);if(p){p.active=!p.active;save(KEY_PRODUCTS,products);renderAll();toast('تم تحديث حالة المنتج')}}window.toggleProduct=toggleProduct;function deleteProduct(id){if(!confirm('هل تريد حذف هذا المنتج؟'))return;products=products.filter(p=>p.id!==id);save(KEY_PRODUCTS,products);renderAll();toast('تم حذف المنتج')}window.deleteProduct=deleteProduct;function deleteCat(c){if(products.some(p=>p.category===c)){toast('لا يمكن حذف تصنيف مرتبط بمنتجات');return}if(confirm('حذف التصنيف؟')){cats=cats.filter(x=>x!==c);save(KEY_CATS,cats);renderAll();toast('تم حذف التصنيف')}}window.deleteCat=deleteCat;
+    function viewOrder(id){const o=orders.find(x=>x.id===id);if(!o)return;$('#orderDetails').innerHTML=`<div class="order-info"><div><small>رقم الطلب</small><strong>${o.id}</strong></div><div><small>التاريخ</small><strong>${o.date||'-'}</strong></div><div><small>العميل</small><strong>${o.customer}</strong></div><div><small>التواصل</small><strong>${o.phone||'-'}</strong></div></div><h3 style="font-size:15px">المنتجات</h3>${(o.items||[]).map(i=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0;font-size:12px"><span>${i.name} × ${i.qty}</span><b>${money(i.price*i.qty)}</b></div>`).join('')}<div style="display:flex;justify-content:space-between;margin:16px 0;font-weight:800"><span>الإجمالي</span><span class="price">${money(o.total)}</span></div><div class="field"><label>تحديث حالة الطلب</label><select id="orderStatus"><option ${o.status==='جديد'?'selected':''}>جديد</option><option ${o.status==='قيد المعالجة'?'selected':''}>قيد المعالجة</option><option ${o.status==='مكتمل'?'selected':''}>مكتمل</option><option ${o.status==='ملغي'?'selected':''}>ملغي</option></select></div><button class="primary" style="margin-top:10px" onclick="updateOrder('${o.id}')">حفظ الحالة</button>`;$('#orderModal').classList.add('show')}window.viewOrder=viewOrder;function updateOrder(id){const o=orders.find(x=>x.id===id);if(o){o.status=$('#orderStatus').value;save(KEY_ORDERS,orders);closeModal('orderModal');renderAll();renderOrders();toast('تم تحديث حالة الطلب')}}window.updateOrder=updateOrder;
+    function exportOrders(){const blob=new Blob([JSON.stringify(orders,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nova-orders.json';a.click();URL.revokeObjectURL(a.href)}window.exportOrders=exportOrders;$('#orderSearch').oninput=renderOrders;$('#orderFilter').onchange=renderOrders;$('#productSearch').oninput=renderProducts;$('#productCatFilter').onchange=renderProducts;renderAll();
+  </script>
 </body>
 </html>
