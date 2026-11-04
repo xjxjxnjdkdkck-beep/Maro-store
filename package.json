@@ -1,0 +1,15 @@
+{
+  "name": "nova-digital-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "jose": "6.0.10",
+    "mysql2": "3.14.1"
+  }
+}
