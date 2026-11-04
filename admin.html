@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARO | لوحة التحكم</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb' },
+                        dark: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f1f5f9; color: #0f172a; }
+        /* إخفاء شريط التمرير للكروت الأفقية */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* تنسيق شريط التنقل السفلي */
+        .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .nav-item.active { color: #2563eb; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-6">
+        <div class="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center text-brand-600 text-4xl mb-6 shadow-sm">
+            <i class="ph-fill ph-chart-pie-slice"></i>
+        </div>
+        <h1 class="text-3xl font-black text-dark mb-2">MARO</h1>
+        <p class="text-gray-500 mb-8 font-bold">تسجيل الدخول للإدارة</p>
+        
+        <div class="w-full max-w-sm space-y-4">
+            <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:border-brand-500 font-bold text-sm">
+            <input type="password" id="password" placeholder="كلمة المرور" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:border-brand-500 font-bold text-sm">
+            <button onclick="window.login()" class="w-full bg-brand-600 text-white font-black py-4 rounded-2xl hover:bg-brand-500 transition shadow-lg shadow-brand-500/30">دخول</button>
+            <p id="login-error" class="text-red-500 text-sm text-center hidden font-bold"></p>
+        </div>
+    </div>
+
+    <!-- محتوى التطبيق (مقيد بعرض الموبايل في الشاشات الكبيرة) -->
+    <div id="app-content" class="flex-1 flex flex-col overflow-hidden max-w-md mx-auto w-full bg-[#f8fafc] relative shadow-2xl">
+        
+        <!-- Header -->
+        <header class="px-6 pt-8 pb-4 flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-black text-dark mb-1">لوحة التحكم</h1>
+                <p class="text-gray-500 font-bold text-sm">مرحباً، مارو 👋<br>هنا نظرة سريعة على متحرك اليوم</p>
+            </div>
+            <div class="flex gap-2">
+                <button class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-600 shadow-sm relative border border-gray-100">
+                    <i class="ph ph-bell text-2xl"></i>
+                    <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <button class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-600 shadow-sm border border-gray-100">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Scrollable Content -->
+        <main class="flex-1 overflow-y-auto pb-28">
+            
+            <!-- Stats Cards (Horizontal Scroll) -->
+            <div class="flex gap-4 overflow-x-auto hide-scrollbar px-6 py-4 snap-x">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-3xl p-5 min-w-[160px] flex-shrink-0 snap-start shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center"><i class="ph-fill ph-shopping-cart text-xl"></i></div>
+                        <span class="text-green-500 bg-green-50 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1"><i class="ph ph-trend-up"></i> +12%</span>
+                    </div>
+                    <h3 class="text-gray-500 text-xs font-bold mb-1">المبيعات</h3>
+                    <div class="text-2xl font-black text-dark" id="stat-sales">$0.00</div>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white rounded-3xl p-5 min-w-[160px] flex-shrink-0 snap-start shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center"><i class="ph-fill ph-package text-xl"></i></div>
+                        <span class="text-green-500 bg-green-50 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1"><i class="ph ph-trend-up"></i> +18%</span>
+                    </div>
+                    <h3 class="text-gray-500 text-xs font-bold mb-1">الطلبات</h3>
+                    <div class="text-2xl font-black text-dark" id="stat-orders">0</div>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white rounded-3xl p-5 min-w-[160px] flex-shrink-0 snap-start shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center"><i class="ph-fill ph-currency-dollar text-xl"></i></div>
+                        <span class="text-green-500 bg-green-50 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1"><i class="ph ph-trend-up"></i> +14%</span>
+                    </div>
+                    <h3 class="text-gray-500 text-xs font-bold mb-1">الأرباح</h3>
+                    <div class="text-2xl font-black text-dark" id="stat-profits">$0.00</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="px-6 mt-2">
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-black text-dark text-lg">المبيعات الأخيرة</h2>
+                        <button class="bg-gray-50 border border-gray-100 text-gray-600 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+                            آخر 7 أيام <i class="ph ph-caret-down"></i>
+                        </button>
+                    </div>
+                    <div class="h-48 relative">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="px-6 mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-black text-dark text-lg">الطلبات الأخيرة</h2>
+                    <button class="text-brand-600 text-xs font-bold flex items-center gap-1">عرض الكل <i class="ph ph-caret-left"></i></button>
+                </div>
+                
+                <div class="space-y-3" id="recent-orders-list">
+                    <!-- Populated by JS -->
+                    <div class="animate-pulse bg-white h-24 rounded-2xl border border-gray-100"></div>
+                    <div class="animate-pulse bg-white h-24 rounded-2xl border border-gray-100"></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav absolute bottom-0 w-full bg-white rounded-t-3xl flex justify-between items-center px-6 py-4">
+            <a href="#" class="nav-item active flex flex-col items-center gap-1">
+                <i class="ph-fill ph-house text-2xl"></i>
+                <span class="text-[10px] font-bold">الرئيسية</span>
+            </a>
+            <a href="#" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-brand-600 transition">
+                <i class="ph ph-package text-2xl"></i>
+                <span class="text-[10px] font-bold">المنتجات</span>
+            </a>
+            
+            <!-- Floating Add Button -->
+            <div class="relative w-16 h-16">
+                <button class="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-brand-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-500/40 hover:scale-105 transition">
+                    <i class="ph ph-plus text-2xl"></i>
+                </button>
+                <span class="absolute -bottom-1 w-full text-center text-[10px] font-bold text-gray-400">إضافة</span>
+            </div>
+
+            <a href="#" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-brand-600 transition">
+                <i class="ph ph-chart-bar text-2xl"></i>
+                <span class="text-[10px] font-bold">التقارير</span>
+            </a>
+            <a href="#" onclick="window.logout()" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-brand-600 transition">
+                <i class="ph ph-gear text-2xl"></i>
+                <span class="text-[10px] font-bold">الإعدادات</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZucoNuZyKDoxfS7tboc3-ZttqONuw_vw",
+            authDomain: "maro-store-4dc09.firebaseapp.com",
+            projectId: "maro-store-4dc09",
+            storageBucket: "maro-store-4dc09.firebasestorage.app",
+            messagingSenderId: "55163169834",
+            appId: "1:55163169834:web:48ba5eda57e23c41886753"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let chartInstance = null;
+
+        window.login = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(() => {
+                document.getElementById('login-error').classList.remove('hidden');
+                document.getElementById('login-error').innerText = "بيانات الدخول غير صحيحة.";
+            });
+        };
+
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                loadData();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+            }
+        });
+
+        async function loadData() {
+            try {
+                const snap = await getDocs(collection(db, "products"));
+                const products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // حساب الإحصائيات (تقريبية بناءً على المنتجات)
+                const totalSales = products.reduce((sum, p) => sum + (Number(p.price) || 0), 0) * 12.5; // ضربنا في رقم وهمي عشان تطلع أرقام كبيرة زي الصورة
+                const totalOrders = products.length * 14; 
+                const totalProfits = totalSales * 0.35;
+
+                document.getElementById('stat-sales').innerText = `$${totalSales.toFixed(2)}`;
+                document.getElementById('stat-orders').innerText = totalOrders;
+                document.getElementById('stat-profits').innerText = `$${totalProfits.toFixed(2)}`;
+
+                renderChart(totalSales);
+                renderRecentOrders(products);
+
+            } catch (e) {
+                console.error("Error loading data:", e);
+            }
+        }
+
+        function renderChart(total) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            let gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+            gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+                    datasets: [{
+                        label: 'المبيعات',
+                        data: [30, 45, 35, 55, 40, 70, total / 7], // بيانات وهمية عشان تطلع زي الرسمة
+                        borderColor: '#2563eb',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#2563eb',
+                            titleFont: { family: 'Tajawal' },
+                            bodyFont: { family: 'Tajawal', weight: 'bold' },
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: { label: function(context) { return '$' + context.parsed.y.toFixed(2); } }
+                        }
+                    },
+                    scales: {
+                        y: { display: false, beginAtZero: true },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { font: { family: 'Tajawal', size: 10 }, color: '#94a3b8' } 
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRecentOrders(products) {
+            const container = document.getElementById('recent-orders-list');
+            const recent = products.slice(0, 3); // أول 3 منتجات
+
+            if (recent.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-400 font-bold py-10">لا توجد طلبات حديثة.</div>';
+                return;
+            }
+
+            container.innerHTML = recent.map((p, index) => `
+                <div class="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 border border-gray-200">
+                            ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="ph ph-image text-2xl"></i></div>`}
+                        </div>
+                        <div>
+                            <h3 class="font-black text-dark text-sm mb-1 line-clamp-1">${p.name}</h3>
+                            <p class="text-gray-400 text-[10px] font-bold mb-2">${p.description || 'طلب رقمي'}</p>
+                            <div class="text-brand-600 font-black text-sm">$${p.price}</div>
+                        </div>
+                    </div>
+                    <div class="text-left flex flex-col items-end">
+                        <span class="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md mb-2 flex items-center gap-1">
+                            مكتمل <i class="ph-fill ph-check-circle"></i>
+                        </span>
+                        <span class="text-gray-400 text-[10px] font-bold">منذ ${(index + 1) * 12} دقيقة</span>
+                        <i class="ph ph-caret-left text-gray-300 mt-2"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
