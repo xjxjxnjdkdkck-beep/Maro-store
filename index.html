@@ -1,241 +1,26 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>متجر مارو | Maro Premium Store</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
-    :root { --primary: #0b5fff; --accent: #ff6b00; --bg: #fafbfc; --surface: #fff; --text: #111827; --muted: #6b7280; --border: #f3f4f6; --font: 'Cairo', sans-serif; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
-    .header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-    .nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; max-width: 1280px; margin: auto; }
-    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
-    .logo h1 { font-size: 22px; font-weight: 900; }
-    .hero { max-width: 1280px; margin: 120px auto 60px; padding: 0 24px; text-align: center; }
-    .hero h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 900; margin-bottom: 20px; }
-    .hero h2 span { color: var(--primary); }
-    .products-grid { max-width: 1280px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-    .product-card { background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; transition: 0.3s; }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    .product-img { height: 200px; background-size: cover; background-position: center; }
-    .product-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .product-price { font-size: 20px; font-weight: 900; color: var(--primary); margin-top: auto; padding-top: 15px; }
-    .btn { background: var(--primary); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; text-align: center; }
-    .btn:hover { background: #0044cc; }
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; display: none; place-items: center; padding: 20px; }
-    .modal.show { display: grid; }
-    .modal-content { background: var(--surface); padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; }
-    .form-group { margin-bottom: 15px; }
-    .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; }
-    .floating-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-    .wa-float { background: #25D366; color: #fff; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; box-shadow: 0 10px 20px rgba(37,211,102,0.3); text-decoration: none; }
-    .support-float { background: #0f172a; color: #fff; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); cursor: pointer; border: none; }
-    .footer { background: #0f172a; color: #94a3b8; padding: 40px 20px; text-align: center; margin-top: 60px; }
-    @media (max-width: 600px) { .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .product-img { height: 120px; } .product-info { padding: 10px; } .product-info h3 { font-size: 13px; } }
-  </style>
-</head>
-<body>
 
-  <header class="header">
-    <nav class="nav">
-      <a href="#" class="logo">
-        <svg style="width:40px;height:40px;" viewBox="0 0 100 100"><path d="M50 5 L95 27 L95 73 L50 95 L5 73 L5 27 Z" fill="#0b5fff"/><text x="50" y="68" font-family="Cairo" font-size="45" font-weight="900" fill="white" text-anchor="middle">M</text></svg>
-        <h1>متجر مارو</h1>
-      </a>
-      <div style="display:flex;gap:10px">
-        <a href="admin.html" class="btn" style="padding:8px 12px;background:#111827">الإدارة ⚙️</a>
-        <button class="btn" id="userBtn" style="padding:8px 12px;">👤</button>
-      </div>
-    </nav>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="theme-color" content="#081328" />
+    <meta name="description" content="MARO — متجر عالمي للبطاقات والاشتراكات والمنتجات الرقمية." />
+    <title>MARO / Digital Goods</title>
+    <!-- THIS IS THE START OF A COMMENT BLOCK, BLOCK TO BE DELETED: Google Fonts here, example:
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    THIS IS THE END OF A COMMENT BLOCK, BLOCK TO BE DELETED -->
+  </head>
 
-  <section class="hero">
-    <h2>تسوّق بذكاء، وادفع <span>بأمان.</span></h2>
-    <p style="font-size:18px;color:var(--muted);">أفضل الاشتراكات الرقمية وبطاقات الألعاب.</p>
-  </section>
+  <body>
+    <div id="root"></div>
+    <script src="/api/platform/config.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
 
-  <div class="products-grid" id="productsGrid"></div>
+  </body>
 
-  <div class="floating-btns">
-    <a href="#" id="waLink" target="_blank" class="wa-float">💬</a>
-    <button class="support-float" onclick="document.getElementById('supportModal').classList.add('show')">🎫</button>
-  </div>
-
-  <!-- Auth Modal -->
-  <div class="modal" id="authModal">
-    <div class="modal-content">
-      <button style="float:left;border:none;background:none;font-size:20px;cursor:pointer" onclick="document.getElementById('authModal').classList.remove('show')">×</button>
-      <h2 style="text-align:center;margin-bottom:20px;">تسجيل الدخول</h2>
-      <button class="btn" id="googleLoginBtn" style="width:100%;background:#fff;color:#111;border:1px solid #ddd;margin-bottom:15px;">تسجيل بواسطة Google</button>
-      <form id="loginForm">
-        <div class="form-group"><input type="email" id="loginEmail" class="form-control" placeholder="البريد الإلكتروني" required></div>
-        <div class="form-group"><input type="password" id="loginPassword" class="form-control" placeholder="كلمة المرور" required></div>
-        <button type="button" onclick="resetPassword()" style="background:none;border:none;color:var(--primary);cursor:pointer;margin-bottom:10px;font-size:13px;">نسيت كلمة المرور؟</button>
-        <button type="submit" class="btn" style="width:100%">دخول</button>
-      </form>
-      <p style="text-align:center;margin-top:15px;font-size:13px;">ليس لديك حساب؟ <a href="#" onclick="registerAccount()" style="color:var(--primary)">إنشاء حساب</a></p>
-    </div>
-  </div>
-
-  <!-- Support Modal -->
-  <div class="modal" id="supportModal">
-    <div class="modal-content">
-      <button style="float:left;border:none;background:none;font-size:20px;cursor:pointer" onclick="document.getElementById('supportModal').classList.remove('show')">×</button>
-      <h2 style="text-align:center;margin-bottom:20px;">الدعم الفني والشكاوى</h2>
-      <form id="supportForm">
-        <div class="form-group"><input type="text" id="supName" class="form-control" placeholder="اسمك" required></div>
-        <div class="form-group"><input type="tel" id="supPhone" class="form-control" placeholder="رقم هاتفك" required></div>
-        <div class="form-group"><textarea id="supMsg" class="form-control" placeholder="شكواك أو استفسارك" required></textarea></div>
-        <button type="submit" class="btn" style="width:100%">إرسال</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Checkout Modal -->
-  <div class="modal" id="checkoutModal">
-    <div class="modal-content" id="checkoutContent">
-      <button style="float:left;border:none;background:none;font-size:20px;cursor:pointer" onclick="document.getElementById('checkoutModal').classList.remove('show')">×</button>
-      <h2 style="text-align:center;margin-bottom:20px;">إتمام الطلب</h2>
-      <div id="orderSummary" style="background:#f8fafc;padding:15px;border-radius:10px;margin-bottom:15px;"></div>
-      <form id="checkoutForm">
-        <div class="form-group"><input type="text" id="custName" class="form-control" placeholder="الاسم الكامل" required></div>
-        <div class="form-group"><input type="tel" id="custPhone" class="form-control" placeholder="رقم الهاتف" required></div>
-        <div class="form-group" style="display:flex;gap:10px;">
-          <input type="text" id="couponCode" class="form-control" placeholder="كود الخصم (اختياري)">
-          <button type="button" onclick="checkCoupon()" class="btn" style="background:#111827;padding:0 15px;">تطبيق</button>
-        </div>
-        <div id="couponMsg" style="font-size:12px;margin-bottom:10px;"></div>
-        <button type="submit" class="btn" style="width:100%;background:#10b981;">تأكيد الطلب والدفع</button>
-      </form>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <h3 style="color:#fff;margin-bottom:10px;">متجر مارو</h3>
-    <p>© 2026 جميع الحقوق محفوظة</p>
-    <div style="margin-top:15px;">
-      <a href="privacy.html" style="color:#94a3b8;margin:0 10px;">الخصوصية</a>
-      <a href="terms.html" style="color:#94a3b8;margin:0 10px;">الشروط</a>
-    </div>
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    
-    const firebaseConfig={apiKey:'AIzaSyAZucoNuZyKDoxfS7tboc3-ZttqONuw_vw',authDomain:'maro-store-4dc09.firebaseapp.com',projectId:'maro-store-4dc09',storageBucket:'maro-store-4dc09.firebasestorage.app',messagingSenderId:'55163169834',appId:'1:55163169834:web:48ba5eda57e23c41886753',measurementId:'G-FZWPNG5XD3'};
-    const auth = getAuth(initializeApp(firebaseConfig)); const provider = new GoogleAuthProvider();
-    
-    window.novaGetToken = async () => auth.currentUser ? auth.currentUser.getIdToken() : null;
-    onAuthStateChanged(auth, user => { document.getElementById('userBtn').onclick = () => { if(user) { signOut(auth); alert('تم تسجيل الخروج'); } else { document.getElementById('authModal').classList.add('show'); } }; });
-
-    document.getElementById('googleLoginBtn').onclick = async () => { try { await signInWithPopup(auth, provider); document.getElementById('authModal').classList.remove('show'); } catch(e) { alert('فشل الدخول'); } };
-    document.getElementById('loginForm').onsubmit = async (e) => { e.preventDefault(); try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); document.getElementById('authModal').classList.remove('show'); } catch(e) { alert('بيانات خاطئة'); } };
-    
-    window.resetPassword = async () => {
-      const email = document.getElementById('loginEmail').value;
-      if(!email) return alert('اكتب بريدك أولاً');
-      try { await sendPasswordResetEmail(auth, email); alert('تم إرسال رابط تغيير الباسورد إلى بريدك'); } catch(e) { alert('خطأ'); }
-    };
-    window.registerAccount = async () => {
-      const email = prompt('أدخل بريدك الإلكتروني:');
-      const pass = prompt('أدخل كلمة المرور (6 أحرف على الأقل):');
-      if(email && pass) { try { await createUserWithEmailAndPassword(auth, email, pass); alert('تم إنشاء الحساب'); document.getElementById('authModal').classList.remove('show'); } catch(e) { alert('خطأ: ' + e.message); } }
-    };
-    
-    document.getElementById('supportForm').onsubmit = async (e) => {
-      e.preventDefault();
-      await fetch('/api/complaints', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name: document.getElementById('supName').value, phone: document.getElementById('supPhone').value, message: document.getElementById('supMsg').value }) });
-      alert('تم إرسال شكواك، سنتواصل معك قريباً'); document.getElementById('supportModal').classList.remove('show');
-    };
-  </script>
-  
-  <script>
-    let products = [], currentCart = null, discount = 0;
-    const money = n => '$' + Number(n).toFixed(2);
-
-    async function loadData() {
-      const [pr, st] = await Promise.all([fetch('/api/products'), fetch('/api/settings')]);
-      products = await pr.json();
-      const settings = await st.json();
-      
-      const waNum = settings.whatsapp || '962795230369';
-      document.getElementById('waLink').href = `https://wa.me/${waNum.replace(/[^0-9]/g,'')}`;
-
-      // المنتجات بصور 3D احترافية
-      const fallbackImages = {
-        'Netflix': 'https://images.unsplash.com/photo-1627873649417-c67f701f1949?q=80&w=600&auto=format&fit=crop',
-        'PUBG': 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?q=80&w=600&auto=format&fit=crop',
-        'Spotify': 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?q=80&w=600&auto=format&fit=crop',
-        'iTunes': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop',
-        'ADSL': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=600&auto=format&fit=crop'
-      };
-
-      document.getElementById('productsGrid').innerHTML = products.map(p => {
-        let img = p.image;
-        if(!img) {
-            for(let key in fallbackImages) { if(p.name.includes(key)) img = fallbackImages[key]; }
-        }
-        if(!img) img = 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=600&auto=format&fit=crop'; // Default 3D card
-
-        return `
-        <article class="product-card">
-          <div class="product-img" style="background-image:url('${img}')"></div>
-          <div class="product-info">
-            <h3 style="font-size:16px;font-weight:800">${p.name}</h3>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">${p.description}</p>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span class="product-price">${money(p.price)}</span>
-              <button class="btn" style="padding:8px 12px;font-size:12px;" onclick="buyNow('${p.id}')">شراء</button>
-            </div>
-          </div>
-        </article>
-      `}).join('');
-    }
-
-    window.buyNow = (id) => {
-      currentCart = products.find(p => p.id === id);
-      discount = 0; document.getElementById('couponCode').value = ''; document.getElementById('couponMsg').textContent = '';
-      document.getElementById('orderSummary').innerHTML = `<b>${currentCart.name}</b> <br> الإجمالي: ${money(currentCart.price)}`;
-      document.getElementById('checkoutModal').classList.add('show');
-    };
-
-    window.checkCoupon = async () => {
-      const code = document.getElementById('couponCode').value;
-      if(!code) return;
-      const r = await fetch('/api/check-coupon/' + code);
-      const res = await r.json();
-      if(res.valid) { discount = res.discount; document.getElementById('couponMsg').innerHTML = `<span style="color:green">تم تطبيق خصم ${discount}%</span>`; }
-      else { discount = 0; document.getElementById('couponMsg').innerHTML = `<span style="color:red">كود غير صالح</span>`; }
-    };
-
-    document.getElementById('checkoutForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const token = await window.novaGetToken();
-      if(!token) { alert('سجل دخول أولاً'); return; }
-      const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, coupon = document.getElementById('couponCode').value;
-      
-      const r = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}, body: JSON.stringify({ items: [{id: currentCart.id, qty: 1}], customerName: name, phone, coupon }) });
-      const order = await r.json();
-      
-      const st = await (await fetch('/api/settings')).json();
-      const waNum = st.whatsapp || '962795230369';
-      const wallet = st.wallet || '0795230369';
-      
-      const waMsg = encodeURIComponent(`مرحباً، طلبي رقم: ${order.id}\nالاسم: ${name}\nالإجمالي: ${money(order.total)}`);
-      document.getElementById('checkoutContent').innerHTML = `
-        <div style="text-align:center;">
-          <h2 style="color:green;margin-bottom:15px;">✅ تم تسجيل الطلب</h2>
-          <p>حول مبلغ <b>${money(order.total)}</b> إلى محفظة:</p>
-          <h1 style="color:var(--primary);margin:10px 0;">${wallet}</h1>
-          <a href="https://wa.me/${waNum.replace(/[^0-9]/g,'')}?text=${waMsg}" target="_blank" class="btn" style="background:#25D366;width:100%">إرسال الإشعار عبر واتساب</a>
-        </div>
-      `;
-    };
-
-    loadData();
-  </script>
-</body>
 </html>
