@@ -10,8 +10,11 @@ const PORT = Number(process.env.PORT || 3000);
 const PROJECT_ID = 'maro-store-4dc09';
 const PAYPAL_API = process.env.PAYPAL_API_BASE || 'https://api-m.sandbox.paypal.com';
 const firebaseKeys = createRemoteJWKSet(new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'));
-const dbUrl = new URL(process.env.DATABASE_URL);
+const databaseUrl = String(process.env.DATABASE_URL || '').trim();
+if (!databaseUrl) throw new Error('DATABASE_URL is required. Add the Aiven MySQL connection URL to Render Environment Variables.');
+const dbUrl = new URL(databaseUrl);
 const pool = mysql.createPool({ host: dbUrl.hostname, port: Number(dbUrl.port || 3306), user: decodeURIComponent(dbUrl.username), password: decodeURIComponent(dbUrl.password), database: dbUrl.pathname.replace(/^\//,''), waitForConnections: true, connectionLimit: 8, ssl: { rejectUnauthorized: true } });
+const adminRate = new Map();
 
 const seedProducts = [
   ['p1','اشتراك Netflix Premium','اشتراكات',4.50,'شهر كامل بجودة 4K','عرض خاص','https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=900&q=80'],
@@ -38,32 +41,48 @@ async function migrate() {
 }
 
 function origin(req) {
-  const proto = String(req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0];
-  const host = req.headers['x-forwarded-host'] || req.headers.host;
-  return `${proto}://${host}`;
+  const proto = String(req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim().toLowerCase();
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  try {
+    const value = new URL(`${proto === 'https' || req.secure ? 'https' : 'http'}://${host}`);
+    if (!value.hostname || value.username || value.password) throw new Error('invalid origin');
+    return value.origin;
+  } catch {
+    return String(process.env.PUBLIC_APP_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+  }
 }
+
+app.disable('x-powered-by');
+app.use((req,res,next)=>{res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');next()});
 
 async function authUser(req, res, next) {
   const header = req.headers.authorization || '';
   if (!header.startsWith('Bearer ')) return res.status(401).json({ error: 'تسجيل الدخول مطلوب.' });
   try {
     const { payload } = await jwtVerify(header.slice(7), firebaseKeys, { issuer: `https://securetoken.google.com/${PROJECT_ID}`, audience: PROJECT_ID });
-    req.user = { uid: payload.user_id || payload.sub, email: payload.email || '' };
+    req.user = { uid: payload.user_id || payload.sub, email: String(payload.email || '').trim().toLowerCase(), emailVerified: payload.email_verified === true };
     next();
   } catch { res.status(401).json({ error: 'جلسة الدخول غير صالحة أو منتهية.' }); }
 }
 
-// Product/code administration requires an authenticated Firebase account. Add an ADMIN_EMAIL
-// environment value before production to restrict these routes to the store owner.
 function adminUser(req, res, next) {
   authUser(req, res, () => {
-    if (process.env.ADMIN_EMAIL && req.user.email.toLowerCase() !== process.env.ADMIN_EMAIL.toLowerCase()) return res.status(403).json({ error: 'لا تملك صلاحية الإدارة.' });
+    const configured = String(process.env.ADMIN_EMAIL || '').trim().replace(/^['"]|['"]$/g,'').toLowerCase();
+    const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+    const now = Date.now(), recent = (adminRate.get(ip) || []).filter(t=>now-t<60000);
+    if (recent.length >= 60) return res.status(429).json({error:'محاولات كثيرة، حاول بعد دقيقة.'});
+    recent.push(now); adminRate.set(ip,recent);
+    if (!configured) return res.status(503).json({error:'لم يتم إعداد بريد مدير المتجر بعد.'});
+    if (!req.user.emailVerified) return res.status(403).json({error:'يجب تأكيد بريد المدير أولاً.'});
+    if (!req.user.email || req.user.email !== configured) return res.status(403).json({error:'هذا الحساب ليس لديه صلاحية الإدارة.'});
     next();
   });
 }
 
 async function paypalToken() {
-  const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64');
+  const clientId = String(process.env.PAYPAL_CLIENT_ID || '').trim().replace(/^['"]|['"]$/g,'');
+  const clientSecret = String(process.env.PAYPAL_CLIENT_SECRET || '').trim().replace(/^['"]|['"]$/g,'');
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
   const r = await fetch(`${PAYPAL_API}/v1/oauth2/token`, { method:'POST', headers:{ Authorization:`Basic ${auth}`, 'Content-Type':'application/x-www-form-urlencoded' }, body:'grant_type=client_credentials' });
   if (!r.ok) throw new Error(`PayPal token failed ${r.status}`);
   return (await r.json()).access_token;
@@ -83,6 +102,7 @@ app.get('/api/categories', async (_req,res)=>{ const [rows]=await pool.query('SE
 app.get('/api/products', async (_req,res)=>{ const [rows]=await pool.query(`SELECT p.*, (SELECT COUNT(*) FROM nova_inventory_codes c WHERE c.product_id=p.id AND c.status='available') AS available_codes FROM nova_products p WHERE p.active=1 ORDER BY p.created_at DESC`); res.json(rows); });
 app.get('/api/admin/products', adminUser, async (_req,res)=>{ const [rows]=await pool.query(`SELECT p.*, (SELECT COUNT(*) FROM nova_inventory_codes c WHERE c.product_id=p.id AND c.status='available') AS available_codes FROM nova_products p ORDER BY p.created_at DESC`); res.json(rows); });
 app.post('/api/admin/products', adminUser, async (req,res)=>{ const {id,name,category,price,description,tag,image}=req.body||{}; if(!name||!category||!Number.isFinite(Number(price))) return res.status(400).json({error:'بيانات المنتج ناقصة.'}); const productId=id||`p-${Date.now()}`; await pool.query(`INSERT INTO nova_products (id,name,category,price,description,tag,image) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name),category=VALUES(category),price=VALUES(price),description=VALUES(description),tag=VALUES(tag),image=VALUES(image)`,[productId,name,category,Number(price),description||'',tag||'جديد',image||'']); res.json({ok:true,id:productId}); });
+app.post('/api/admin/import-product', adminUser, async (req,res)=>{ try { const raw=String(req.body?.url||'').trim(); const u=new URL(raw); if(!['http:','https:'].includes(u.protocol)) return res.status(400).json({error:'استخدم رابط HTTPS أو HTTP صحيح.'}); if(['localhost','127.0.0.1','0.0.0.0','::1'].includes(u.hostname)||/^10\.|^192\.168\.|^172\.(1[6-9]|2\d|3[0-1])\./.test(u.hostname)) return res.status(400).json({error:'هذا الرابط غير مسموح لأسباب أمنية.'}); const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),8000); const r=await fetch(u,{headers:{'User-Agent':'MaroStoreProductImporter/1.0'},signal:controller.signal,redirect:'follow'}); clearTimeout(timer); if(!r.ok)return res.status(400).json({error:'تعذر قراءة صفحة المنتج.'}); const html=(await r.text()).slice(0,1200000); const meta=(name)=>{const re=new RegExp(`<meta[^>]+(?:property|name)=["']${name}["'][^>]+content=["']([^"']*)["']|<meta[^>]+content=["']([^"']*)["'][^>]+(?:property|name)=["']${name}["']`,'i');const m=html.match(re);return m?.[1]||m?.[2]||''}; const clean=x=>String(x||'').replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/<[^>]+>/g,'').trim(); const title=clean(meta('og:title')||meta('twitter:title')||(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]); const description=clean(meta('og:description')||meta('description')); const image=meta('og:image')||meta('twitter:image'); const priceMatch=html.match(/(?:"price"|itemprop=["']price["'])\s*[:=]\s*["']?([0-9]+(?:[.,][0-9]{1,2})?)/i); res.json({ok:true,data:{name:title.slice(0,255),description:description.slice(0,500),image:image.slice(0,1000),price:priceMatch?Number(priceMatch[1].replace(',','.')):0,tag:'مستورد'}}); } catch(e){res.status(400).json({error:e.name==='AbortError'?'انتهت مهلة قراءة الرابط.':'الرابط غير صالح أو لا يمكن قراءته.'});} });
 app.patch('/api/admin/products/:id', adminUser, async (req,res)=>{ const active=Boolean(req.body?.active); await pool.query('UPDATE nova_products SET active=? WHERE id=?',[active,req.params.id]); res.json({ok:true}); });
 app.delete('/api/admin/products/:id', adminUser, async (req,res)=>{ await pool.query('DELETE FROM nova_products WHERE id=?',[req.params.id]); res.json({ok:true}); });
 app.post('/api/admin/categories', adminUser, async (req,res)=>{ const name=String(req.body?.name||'').trim(); if(!name) return res.status(400).json({error:'اسم التصنيف مطلوب.'}); await pool.query('INSERT IGNORE INTO nova_categories (name) VALUES (?)',[name]); res.json({ok:true}); });
@@ -96,7 +116,7 @@ app.post('/api/orders', authUser, async (req,res)=>{
   let total=0; const normalized=[]; for(const item of items){ const p=byId.get(item.id),qty=Math.max(1,Math.min(99,Number(item.qty)||1)); if(!p) return res.status(400).json({error:'أحد المنتجات لم يعد متاحاً.'}); total+=Number(p.price)*qty; normalized.push({p,qty}); }
   const id=orderId(); const c=await pool.getConnection(); try { await c.beginTransaction(); await c.query('INSERT INTO nova_orders (id,firebase_uid,customer_email,customer_name,phone,note,total) VALUES (?,?,?,?,?,?,?)',[id,req.user.uid,req.user.email,customerName||'',phone||'',note||'',total]); for(const x of normalized) await c.query('INSERT INTO nova_order_items (order_id,product_id,product_name,qty,unit_price) VALUES (?,?,?,?,?)',[id,x.p.id,x.p.name,x.qty,x.p.price]); await c.commit(); res.json({id,total,currency:'USD'}); } catch(e){ await c.rollback(); throw e; } finally { c.release(); }
 });
-app.post('/api/paypal/create-order', authUser, async (req,res)=>{ try { const id=String(req.body?.orderId||''); const [rows]=await pool.query('SELECT * FROM nova_orders WHERE id=? AND firebase_uid=? AND status="pending"',[id,req.user.uid]); if(!rows.length) return res.status(404).json({error:'الطلب غير موجود.'}); const o=rows[0]; const pp=await paypal('/v2/checkout/orders',{method:'POST',body:JSON.stringify({intent:'CAPTURE',purchase_units:[{reference_id:o.id,custom_id:o.id,amount:{currency_code:o.currency,value:Number(o.total).toFixed(2)},description:'NOVA Digital Store order'}],application_context:{brand_name:'NOVA Digital Store',user_action:'PAY_NOW',return_url:`${origin(req)}/?paypal=success&order=${encodeURIComponent(o.id)}`,cancel_url:`${origin(req)}/?paypal=cancel&order=${encodeURIComponent(o.id)}`}})}); const approve=pp.links?.find(x=>x.rel==='approve')?.href; await pool.query('UPDATE nova_orders SET paypal_order_id=? WHERE id=?',[pp.id,o.id]); res.json({paypalOrderId:pp.id,approvalUrl:approve}); } catch(e){ console.error(e); res.status(502).json({error:'تعذر إنشاء عملية PayPal.',details:e.details?.message||e.message}); } });
+app.post('/api/paypal/create-order', authUser, async (req,res)=>{ try { const id=String(req.body?.orderId||''); const [rows]=await pool.query('SELECT * FROM nova_orders WHERE id=? AND firebase_uid=? AND status="pending"',[id,req.user.uid]); if(!rows.length) return res.status(404).json({error:'الطلب غير موجود.'}); const o=rows[0]; const pp=await paypal('/v2/checkout/orders',{method:'POST',body:JSON.stringify({intent:'CAPTURE',purchase_units:[{reference_id:o.id,custom_id:o.id,amount:{currency_code:o.currency,value:Number(o.total).toFixed(2)},description:'NOVA Digital Store order'}],application_context:{brand_name:'NOVA Digital Store',user_action:'PAY_NOW',return_url:`${origin(req)}/?paypal=success&order=${encodeURIComponent(o.id)}`,cancel_url:`${origin(req)}/?paypal=cancel&order=${encodeURIComponent(o.id)}`}})}); const approve=pp.links?.find(x=>x.rel==='approve')?.href; await pool.query('UPDATE nova_orders SET paypal_order_id=? WHERE id=?',[pp.id,o.id]); res.json({paypalOrderId:pp.id,approvalUrl:approve}); } catch(e){ console.error(e); res.status(502).json({error:e.message.includes('PayPal token failed')?'بيانات PayPal غير صحيحة أو غير متطابقة. استخدم Client ID وClient Secret من نفس تطبيق Sandbox.':'تعذر إنشاء عملية PayPal.',details:e.details?.message||e.message}); } });
 async function fulfill(orderIdValue,paypalOrderId,captureId){ const c=await pool.getConnection(); try { await c.beginTransaction(); const [orders]=await c.query('SELECT * FROM nova_orders WHERE id=? FOR UPDATE',[orderIdValue]); if(!orders.length) throw new Error('order missing'); const o=orders[0]; if(o.status==='paid'||o.status==='completed') { await c.commit(); return; } const [items]=await c.query('SELECT * FROM nova_order_items WHERE order_id=?',[orderIdValue]); for(const item of items){ for(let n=0;n<item.qty;n++){ const [codes]=await c.query(`SELECT id,code FROM nova_inventory_codes WHERE product_id=? AND status='available' ORDER BY id LIMIT 1 FOR UPDATE`,[item.product_id]); if(!codes.length) throw new Error(`No inventory for ${item.product_id}`); await c.query(`UPDATE nova_inventory_codes SET status='sold',order_id=?,sold_at=NOW() WHERE id=?`,[orderIdValue,codes[0].id]); await c.query('INSERT INTO nova_order_codes (order_id,product_id,code) VALUES (?,?,?)',[orderIdValue,item.product_id,codes[0].code]); } } await c.query('UPDATE nova_orders SET status="paid",payment_status="paid",paypal_capture_id=?,paypal_order_id=? WHERE id=?',[captureId,paypalOrderId,orderIdValue]); await c.commit(); } catch(e){ await c.rollback(); throw e; } finally { c.release(); } }
 app.post('/api/paypal/capture-order', authUser, async (req,res)=>{ try { const id=String(req.body?.orderId||''), ppId=String(req.body?.paypalOrderId||''); const [rows]=await pool.query('SELECT * FROM nova_orders WHERE id=? AND firebase_uid=?',[id,req.user.uid]); if(!rows.length) return res.status(404).json({error:'الطلب غير موجود.'}); const result=await paypal(`/v2/checkout/orders/${encodeURIComponent(ppId)}/capture`,{method:'POST',body:'{}'}); const capture=result.purchase_units?.[0]?.payments?.captures?.[0]; await fulfill(id,ppId,capture?.id||''); const [codes]=await pool.query('SELECT product_id,code FROM nova_order_codes WHERE order_id=?',[id]); res.json({ok:true,status:result.status,codes}); } catch(e){ console.error(e); res.status(502).json({error:'تعذر تأكيد الدفع أو تسليم الكود.',details:e.details?.message||e.message}); } });
 app.get('/api/my-orders', authUser, async (req,res)=>{ const [orders]=await pool.query('SELECT * FROM nova_orders WHERE firebase_uid=? ORDER BY created_at DESC',[req.user.uid]); for(const o of orders){ const [codes]=await pool.query('SELECT product_id,code FROM nova_order_codes WHERE order_id=?',[o.id]); o.codes=codes; } res.json(orders); });
