@@ -1,37 +1,32 @@
-export const COOKIE_NAME = "webdev_app_session";
-export const ONE_YEAR_MS = 1000 * 60 * 60 * 24 * 365;
-export const AXIOS_TIMEOUT_MS = 30_000;
-export const UNAUTHED_ERR_MSG = 'Please login (10001)';
-export const NOT_ADMIN_ERR_MSG = 'You do not have required permission (10002)';
+import { OAUTH_STATE_COOKIE, encodeOAuthState } from "@shared/const";
 
-// One-time nonce cookie that binds an OAuth login to the browser that started
-// it. The `__Host-` prefix forces the cookie host-only (Secure, Path=/, no
-// Domain), so a sibling *.manus.space site cannot plant a matching value in a
-// victim's browser.
-export const OAUTH_STATE_COOKIE = "__Host-oauth_state";
+export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
-// `state` carries the callback redirect URI (used at token exchange) plus the
-// CSRF nonce. Defined here so the client encoder and server decoder never drift.
-export type OAuthState = { redirectUri: string; nonce?: string };
+// Start the Manus OAuth login. Call this from an event handler or effect at the
+// moment you want to navigate, e.g. `onClick={() => startLogin()}`.
+//
+// It has SIDE EFFECTS — it mints a one-time nonce, writes the __Host- state
+// cookie, and navigates immediately — so the cookie nonce always matches the
+// `state` it sends. Do NOT call it during render (no `href={startLogin()}` /
+// `loginUrl={...}`): each call overwrites the cookie, so a stray render-phase
+// call would desync it from an in-flight login and the callback would reject it
+// with "invalid oauth state". It returns void by design, so there is no URL to
+// stash across renders.
+export const startLogin = () => {
+  const oauthPortalUrl = window.__MANUS_CONFIG__?.oauthPortalUrl;
+  const appId = window.__MANUS_CONFIG__?.projectId;
+  if (!oauthPortalUrl || !appId) throw new Error("Manus login is not configured");
+  const redirectUri = `${window.location.origin}/api/oauth/callback`;
 
-export const encodeOAuthState = (state: OAuthState): string =>
-  btoa(JSON.stringify(state));
+  const nonce = crypto.randomUUID();
+  document.cookie = `${OAUTH_STATE_COOKIE}=${nonce}; Path=/; Max-Age=600; SameSite=None; Secure`;
+  const state = encodeOAuthState({ redirectUri, nonce });
 
-export const decodeOAuthState = (state: string): OAuthState => {
-  let decoded: string;
-  try {
-    decoded = atob(state);
-  } catch {
-    // Malformed base64 (e.g. attacker-supplied garbage). Return no nonce so the
-    // callback's CSRF guard rejects it with 403 — never throw, since the caller
-    // runs outside the request handler's try/catch.
-    return { redirectUri: "" };
-  }
-  try {
-    const parsed = JSON.parse(decoded);
-    if (parsed && typeof parsed.redirectUri === "string") return parsed;
-  } catch {
-    // Legacy links: `state` was a bare base64(redirectUri) with no nonce.
-  }
-  return { redirectUri: decoded };
+  const url = new URL(`${oauthPortalUrl}/app-auth`);
+  url.searchParams.set("appId", appId);
+  url.searchParams.set("redirectUri", redirectUri);
+  url.searchParams.set("state", state);
+  url.searchParams.set("responseType", "code");
+
+  window.location.href = url.toString();
 };
