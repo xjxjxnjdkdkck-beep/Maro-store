@@ -17,7 +17,8 @@
     .hero h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 900; margin-bottom: 20px; }
     .hero h2 span { color: var(--primary); }
     .products-grid { max-width: 1280px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-    .product-card { background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+    .product-card { background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; transition: 0.3s; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     .product-img { height: 200px; background-size: cover; background-position: center; }
     .product-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
     .product-price { font-size: 20px; font-weight: 900; color: var(--primary); margin-top: auto; padding-top: 15px; }
@@ -160,13 +161,28 @@
       products = await pr.json();
       const settings = await st.json();
       
-      // تحديث روابط الواتساب من الإعدادات
       const waNum = settings.whatsapp || '962795230369';
       document.getElementById('waLink').href = `https://wa.me/${waNum.replace(/[^0-9]/g,'')}`;
 
-      document.getElementById('productsGrid').innerHTML = products.map(p => `
+      // المنتجات بصور 3D احترافية
+      const fallbackImages = {
+        'Netflix': 'https://images.unsplash.com/photo-1627873649417-c67f701f1949?q=80&w=600&auto=format&fit=crop',
+        'PUBG': 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?q=80&w=600&auto=format&fit=crop',
+        'Spotify': 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?q=80&w=600&auto=format&fit=crop',
+        'iTunes': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop',
+        'ADSL': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=600&auto=format&fit=crop'
+      };
+
+      document.getElementById('productsGrid').innerHTML = products.map(p => {
+        let img = p.image;
+        if(!img) {
+            for(let key in fallbackImages) { if(p.name.includes(key)) img = fallbackImages[key]; }
+        }
+        if(!img) img = 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=600&auto=format&fit=crop'; // Default 3D card
+
+        return `
         <article class="product-card">
-          <div class="product-img" style="background-image:url('${p.image}')"></div>
+          <div class="product-img" style="background-image:url('${img}')"></div>
           <div class="product-info">
             <h3 style="font-size:16px;font-weight:800">${p.name}</h3>
             <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">${p.description}</p>
@@ -176,7 +192,7 @@
             </div>
           </div>
         </article>
-      `).join('');
+      `}).join('');
     }
 
     window.buyNow = (id) => {
@@ -201,7 +217,7 @@
       if(!token) { alert('سجل دخول أولاً'); return; }
       const name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value, coupon = document.getElementById('couponCode').value;
       
-      const r = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}, body: JSON.stringify({ items: [{id: currentCart.id, qty: 1}], customerName: name, phone, note: '', coupon }) });
+      const r = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}, body: JSON.stringify({ items: [{id: currentCart.id, qty: 1}], customerName: name, phone, coupon }) });
       const order = await r.json();
       
       const st = await (await fetch('/api/settings')).json();
