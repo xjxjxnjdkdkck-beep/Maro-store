@@ -1,29 +1,44 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>لوحة إدارة مارو</title>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>لوحة إدارة مارو</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-    body { background: #0f172a; color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
-    .side { width: 250px; background: #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .nav-btn { background: transparent; border: none; color: #94a3b8; padding: 12px; text-align: right; font-size: 16px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    body { background: #0f172a; color: #f8fafc; height: 100vh; overflow: hidden; display: flex; }
+    .side { width: 260px; background: #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; transition: 0.3s; }
+    .nav-btn { background: transparent; border: none; color: #94a3b8; padding: 12px; text-align: right; font-size: 15px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
     .nav-btn.active, .nav-btn:hover { background: #334155; color: white; }
-    .main { flex: 1; padding: 30px; overflow-y: auto; }
+    .main { flex: 1; padding: 30px; overflow-y: auto; width: 100%; }
     .card { background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; text-align: right; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; text-align: right; margin-top: 15px; font-size: 14px; }
     th, td { padding: 12px; border-bottom: 1px solid #334155; }
-    input, select { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; width: 100%; margin-bottom: 10px; }
-    .btn { background: #315de7; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
-    .btn-red { background: #ef4444; }
-    .btn-green { background: #10b981; }
+    input, select, textarea { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; width: 100%; margin-bottom: 10px; font-family: inherit; }
+    .btn { background: #315de7; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+    .btn:hover { background: #2448c8; }
+    .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
+    .btn-green { background: #10b981; } .btn-green:hover { background: #059669; }
     .view { display: none; } .view.active { display: block; }
-    .login-screen { position: fixed; inset: 0; background: #0f172a; display: grid; place-items: center; z-index: 999; }
+    .login-screen { position: fixed; inset: 0; background: #0f172a; display: grid; place-items: center; z-index: 2000; }
+    
+    .hamburger { display: none; background: #1e293b; color: white; border: none; font-size: 24px; padding: 10px; border-radius: 8px; margin-bottom: 15px; cursor: pointer; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+
+    @media (max-width: 768px) {
+      .side { position: fixed; top: 0; bottom: 0; right: -100%; width: 280px; }
+      .side.open { right: 0; }
+      .overlay.show { display: block; }
+      .main { padding: 15px; }
+      .hamburger { display: block; }
+    }
   </style>
 </head>
 <body>
+
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
   <div class="login-screen" id="loginScreen">
-    <div style="background:#1e293b;padding:40px;border-radius:16px;width:350px;">
+    <div style="background:#1e293b;padding:40px;border-radius:16px;width:90%;max-width:350px;">
       <h2 style="margin-bottom:20px;text-align:center;">تسجيل دخول الإدارة</h2>
       <input type="email" id="email" placeholder="البريد الإلكتروني">
       <input type="password" id="password" placeholder="كلمة المرور">
@@ -32,41 +47,52 @@
   </div>
 
   <div class="side" id="sidebar" style="display:none;">
-    <h2 style="color:white;margin-bottom:20px;">مارو</h2>
-    <button class="nav-btn active" onclick="showView('orders')">الطلبات</button>
-    <button class="nav-btn" onclick="showView('products')">المنتجات</button>
-    <button class="nav-btn" onclick="showView('coupons')">كوبونات الخصم</button>
-    <button class="nav-btn" onclick="showView('complaints')">الشكاوى</button>
-    <button class="nav-btn" onclick="showView('settings')">الإعدادات</button>
-    <button class="nav-btn" style="margin-top:auto;color:#ef4444;" onclick="logout()">خروج</button>
+    <h2 style="color:white;margin-bottom:20px;text-align:center;">متجر مارو</h2>
+    <button class="nav-btn active" onclick="showView('orders', this)">📦 الطلبات</button>
+    <button class="nav-btn" onclick="showView('products', this)">📱 المنتجات</button>
+    <button class="nav-btn" onclick="showView('coupons', this)">🎟️ كوبونات الخصم</button>
+    <button class="nav-btn" onclick="showView('complaints', this)">✉️ الشكاوى</button>
+    <button class="nav-btn" onclick="showView('settings', this)">⚙️ الإعدادات</button>
+    <button class="nav-btn" style="margin-top:auto;color:#ef4444;" onclick="logout()">🚪 خروج</button>
   </div>
 
   <div class="main" id="mainContent" style="display:none;">
+    <button class="hamburger" onclick="toggleMenu()">☰ القائمة</button>
+
+    <!-- Orders -->
     <div class="view active" id="view-orders">
-      <h1>الطلبات</h1>
-      <div class="card"><table><thead><tr><th>الطلب</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
+      <h1 style="margin-bottom:15px;">الطلبات</h1>
+      <div class="card" style="overflow-x:auto;"><table><thead><tr><th>الطلب</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
     </div>
+
+    <!-- Coupons -->
     <div class="view" id="view-coupons">
-      <h1>كوبونات الخصم</h1>
+      <h1 style="margin-bottom:15px;">كوبونات الخصم</h1>
       <div class="card">
-        <input type="text" id="cpCode" placeholder="كود الخصم (مثال: MARO10)">
-        <input type="number" id="cpDisc" placeholder="نسبة الخصم %">
-        <button class="btn" onclick="addCoupon()">إضافة كوبون</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <input type="text" id="cpCode" placeholder="الكود (مثال: MARO10)" style="flex:1;">
+          <input type="number" id="cpDisc" placeholder="نسبة الخصم %" style="flex:1;">
+          <button class="btn" onclick="addCoupon()">إضافة</button>
+        </div>
         <table><thead><tr><th>الكود</th><th>الخصم</th><th>حذف</th></tr></thead><tbody id="cpTable"></tbody></table>
       </div>
     </div>
+
+    <!-- Complaints -->
     <div class="view" id="view-complaints">
-      <h1>الشكاوى</h1>
-      <div class="card"><table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الرسالة</th><th>الحالة</th><th>حل</th></tr></thead><tbody id="compTable"></tbody></table></div>
+      <h1 style="margin-bottom:15px;">الشكاوى والدعم</h1>
+      <div class="card" style="overflow-x:auto;"><table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الرسالة</th><th>الحالة</th><th>حل</th></tr></thead><tbody id="compTable"></tbody></table></div>
     </div>
+
+    <!-- Settings -->
     <div class="view" id="view-settings">
-      <h1>الإعدادات</h1>
+      <h1 style="margin-bottom:15px;">الإعدادات</h1>
       <div class="card">
-        <label>رقم الواتساب</label>
-        <input type="text" id="setWa" placeholder="9627...">
+        <label>رقم الواتساب (مثال: 962795230369)</label>
+        <input type="text" id="setWa" placeholder="962...">
         <label>رقم المحفظة (زين كاش)</label>
         <input type="text" id="setWallet" placeholder="07...">
-        <button class="btn" onclick="saveSettings()">حفظ الإعدادات</button>
+        <button class="btn" onclick="saveSettings()" style="margin-top:10px;">حفظ الإعدادات</button>
       </div>
     </div>
   </div>
@@ -94,39 +120,92 @@
     window.login = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(()=>alert('بيانات خاطئة'));
     window.logout = () => signOut(auth);
 
-    window.showView = (id) => {
+    window.toggleMenu = () => {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('show');
+    };
+
+    window.showView = (id, btn) => {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + id).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+      if(window.innerWidth <= 768) toggleMenu(); // Close menu on mobile after click
     };
 
     async function loadData() {
       const h = { headers: { Authorization: `Bearer ${window.novaToken}` } };
-      // الطلبات
+      
       const or = await (await fetch('/api/admin/orders', h)).json();
-      document.getElementById('ordersTable').innerHTML = or.map(o => `<tr><td>${o.id}</td><td>${o.customer_name}</td><td>$${o.total}</td><td>${o.status}</td><td><button class="btn btn-red" onclick="delOrder('${o.id}')">حذف</button></td></tr>`).join('');
-      // الكوبونات
+      document.getElementById('ordersTable').innerHTML = or.map(o => `
+        <tr>
+          <td>${o.id}</td>
+          <td>${o.customer_name}<br><small style="color:#94a3b8">${o.phone}</small></td>
+          <td style="color:#10b981;font-weight:bold;">$${o.total}</td>
+          <td>
+            <select onchange="updateOrder('${o.id}', this.value)" style="padding:5px;margin:0;font-size:12px;">
+              <option value="pending" ${o.status==='pending'?'selected':''}>بانتظار الدفع</option>
+              <option value="paid" ${o.status==='paid'?'selected':''}>مدفوع</option>
+              <option value="processing" ${o.status==='processing'?'selected':''}>قيد التجهيز</option>
+              <option value="completed" ${o.status==='completed'?'selected':''}>تم التسليم</option>
+              <option value="cancelled" ${o.status==='cancelled'?'selected':''}>ملغي</option>
+              <option value="returned" ${o.status==='returned'?'selected':''}>مسترجع</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn" style="padding:5px 10px;font-size:12px;background:#0ea5e9;" onclick="printInvoice('${o.id}', '${o.customer_name}', '${o.phone}', '${o.total}')">🖨️ فاتورة</button>
+            <button class="btn btn-red" style="padding:5px 10px;font-size:12px;" onclick="delOrder('${o.id}')">حذف</button>
+          </td>
+        </tr>
+      `).join('');
+      
       const cp = await (await fetch('/api/admin/coupons', h)).json();
-      document.getElementById('cpTable').innerHTML = cp.map(c => `<tr><td>${c.code}</td><td>${c.discount}%</td><td><button class="btn btn-red" onclick="delCoupon('${c.code}')">حذف</button></td></tr>`).join('');
-      // الشكاوى
+      document.getElementById('cpTable').innerHTML = cp.map(c => `<tr><td>${c.code}</td><td>${c.discount}%</td><td><button class="btn btn-red" style="padding:5px 10px;font-size:12px" onclick="delCoupon('${c.code}')">حذف</button></td></tr>`).join('');
+      
       const co = await (await fetch('/api/admin/complaints', h)).json();
-      document.getElementById('compTable').innerHTML = co.map(c => `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.message}</td><td>${c.status}</td><td><button class="btn btn-green" onclick="resolveComp(${c.id})">حل</button></td></tr>`).join('');
-      // الإعدادات
+      document.getElementById('compTable').innerHTML = co.map(c => `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.message}</td><td>${c.status==='resolved'?'تم الحل':'جديد'}</td><td><button class="btn btn-green" style="padding:5px 10px;font-size:12px" onclick="resolveComp(${c.id})">حل</button></td></tr>`).join('');
+      
       const se = await (await fetch('/api/admin/settings', h)).json();
       se.forEach(s => { if(s.setting_key==='whatsapp') document.getElementById('setWa').value = s.setting_value; if(s.setting_key==='wallet') document.getElementById('setWallet').value = s.setting_value; });
     }
 
+    window.updateOrder = async (id, status) => { await fetch('/api/admin/orders/'+id, {method:'PATCH', headers:{Authorization:`Bearer ${window.novaToken}`,'Content-Type':'application/json'}, body:JSON.stringify({status})}); loadData(); };
     window.delOrder = async (id) => { if(confirm('حذف الطلب؟')) { await fetch('/api/admin/orders/'+id, {method:'DELETE', headers:{Authorization:`Bearer ${window.novaToken}`}}); loadData(); } };
     window.delCoupon = async (code) => { await fetch('/api/admin/coupons/'+code, {method:'DELETE', headers:{Authorization:`Bearer ${window.novaToken}`}}); loadData(); };
     window.resolveComp = async (id) => { await fetch('/api/admin/complaints/'+id, {method:'PATCH', headers:{Authorization:`Bearer ${window.novaToken}`,'Content-Type':'application/json'}, body:JSON.stringify({status:'resolved'})}); loadData(); };
     
     window.addCoupon = async () => {
-      await fetch('/api/admin/coupons', {method:'POST', headers:{Authorization:`Bearer ${window.novaToken}`,'Content-Type':'application/json'}, body:JSON.stringify({code: document.getElementById('cpCode').value, discount: document.getElementById('cpDisc').value})});
+      const code = document.getElementById('cpCode').value;
+      const disc = document.getElementById('cpDisc').value;
+      if(!code || !disc) return alert('املأ البيانات');
+      await fetch('/api/admin/coupons', {method:'POST', headers:{Authorization:`Bearer ${window.novaToken}`,'Content-Type':'application/json'}, body:JSON.stringify({code, discount: disc})});
       loadData();
     };
+    
     window.saveSettings = async () => {
       await fetch('/api/admin/settings', {method:'POST', headers:{Authorization:`Bearer ${window.novaToken}`,'Content-Type':'application/json'}, body:JSON.stringify({key:'whatsapp', value:document.getElementById('setWa').value})});
       await fetch('/api/admin/settings', {method:'POST', headers:{Authorization:`Bearer ${window.novaToken}`,'Content-Type':'application/json'}, body:JSON.stringify({key:'wallet', value:document.getElementById('setWallet').value})});
       alert('تم الحفظ');
+    };
+
+    // فاتورة الطباعة
+    window.printInvoice = (id, name, phone, total) => {
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html dir="rtl"><head><title>فاتورة ${id}</title><style>body{font-family:sans-serif;padding:40px;text-align:center;} h1{color:#0b5fff;} table{width:100%;margin-top:20px;border-collapse:collapse;} td,th{border:1px solid #ccc;padding:10px;}</style></head>
+        <body>
+          <h1>متجر مارو</h1>
+          <p>فاتورة طلب رقم: <b>${id}</b></p>
+          <table>
+            <tr><th>العميل</th><td>${name}</td></tr>
+            <tr><th>الهاتف</th><td>${phone}</td></tr>
+            <tr><th>الإجمالي</th><td>$${total}</td></tr>
+          </table>
+          <p style="margin-top:30px;font-size:12px;color:#666;">شكراً لتعاملك معنا!</p>
+          <script>window.print();<\/script>
+        </body></html>
+      `);
+      win.document.close();
     };
   </script>
 </body>
