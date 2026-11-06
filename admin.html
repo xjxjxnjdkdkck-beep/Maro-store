@@ -4,7 +4,6 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>لوحة إدارة مارو</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-    
     :root {
       --bg: #0f172a; --surface: #1e293b; --surface-hover: #334155;
       --text: #f8fafc; --text-muted: #94a3b8;
@@ -12,27 +11,23 @@
       --accent: #ff6b00; --success: #10b981; --danger: #ef4444;
       --border: #334155;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
 
-    /* Sidebar */
-    .sidebar { width: 260px; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
+    .sidebar { width: 260px; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; z-index: 10; }
     .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
     .brand-logo { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), #0044cc); border-radius: 10px; display: grid; place-items: center; font-size: 20px; font-weight: 900; box-shadow: 0 5px 15px var(--primary-glow); }
     .brand h2 { font-size: 20px; font-weight: 900; }
-    
     .nav-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; background: transparent; border: none; color: var(--text-muted); font-family: 'Cairo'; font-size: 15px; font-weight: 700; border-radius: 10px; cursor: pointer; transition: 0.2s; text-align: right; }
     .nav-btn:hover { background: var(--surface-hover); color: var(--text); }
     .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
-    
     .logout-btn { margin-top: auto; color: var(--danger); background: rgba(239, 68, 68, 0.1); }
     .logout-btn:hover { background: var(--danger); color: white; }
 
-    /* Main Content */
-    .main { flex: 1; padding: 30px; overflow-y: auto; }
+    .main { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
     .header h1 { font-size: 28px; font-weight: 900; }
+    .top-actions { display: flex; gap: 10px; }
     
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
     .stat-card { background: var(--surface); padding: 20px; border-radius: 16px; border: 1px solid var(--border); position: relative; overflow: hidden; }
@@ -42,119 +37,175 @@
     .stat-card h3 { color: var(--text-muted); font-size: 14px; font-weight: 600; margin-bottom: 10px; }
     .stat-card p { font-size: 32px; font-weight: 900; }
 
-    /* Cards & Tables */
     .card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; }
     .card-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .card-header h2 { font-size: 18px; font-weight: 800; }
     
+    .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: right; }
-    th { background: #0f172a; color: var(--text-muted); padding: 15px 20px; font-size: 13px; font-weight: 700; }
-    td { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    th { background: #0f172a; color: var(--text-muted); padding: 15px 20px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+    td { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
     tr:hover td { background: rgba(255,255,255,0.02); }
     
-    .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
     .badge.pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
     .badge.completed { background: rgba(16, 185, 129, 0.2); color: var(--success); }
     .badge.cancelled { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .badge.processing { background: rgba(11, 95, 255, 0.2); color: var(--primary); }
 
-    .btn { padding: 10px 20px; border-radius: 8px; font-family: 'Cairo'; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; }
+    .btn { padding: 10px 20px; border-radius: 8px; font-family: 'Cairo'; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; font-size: 14px; }
     .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
     .btn-primary:hover { background: #0044cc; }
     .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
     .btn-danger:hover { background: var(--danger); color: white; }
+    .btn-secondary { background: #334155; color: white; }
+    .btn-secondary:hover { background: #475569; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; margin-bottom: 4px; }
 
-    /* Login Screen */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; place-items: center; padding: 20px; }
+    .modal.show { display: grid; }
+    .modal-content { background: var(--surface); border-radius: 16px; padding: 30px; width: 100%; max-width: 600px; border: 1px solid var(--border); }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-head h2 { font-size: 20px; }
+    .close { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+    .form-control { width: 100%; padding: 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); color: white; font-family: 'Cairo'; outline: none; }
+    .form-control:focus { border-color: var(--primary); }
+
     .login-screen { position: fixed; inset: 0; background: var(--bg); display: grid; place-items: center; z-index: 1000; }
     .login-box { background: var(--surface); padding: 40px; border-radius: 24px; width: 100%; max-width: 400px; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; }
     .login-box h2 { margin-bottom: 30px; font-weight: 900; }
-    .form-group { margin-bottom: 20px; text-align: right; }
-    .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
-    .form-control { width: 100%; padding: 12px 15px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); color: white; font-family: 'Cairo'; outline: none; transition: 0.2s; }
-    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
-    @media (max-width: 900px) {
+    .product-mini { display: flex; align-items: center; gap: 10px; }
+    .product-mini img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+    .product-mini div { display: flex; flex-direction: column; }
+    
+    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: var(--bg); padding: 12px 24px; border-radius: 8px; font-weight: 700; z-index: 2000; transform: translateY(100px); transition: 0.3s; opacity: 0; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 768px) {
       .sidebar { display: none; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .main { padding: 15px; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Login -->
   <div class="login-screen" id="loginScreen">
     <div class="login-box">
       <div style="width:60px; height:60px; background:linear-gradient(135deg, var(--primary), #0044cc); border-radius:16px; display:grid; place-items:center; font-size:30px; font-weight:900; margin:0 auto 20px; box-shadow:0 10px 20px var(--primary-glow);">M</div>
       <h2>مرحباً بعودتك</h2>
       <form id="loginForm">
-        <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="email" class="form-control" required></div>
-        <div class="form-group"><label>كلمة المرور</label><input type="password" id="password" class="form-control" required></div>
+        <div class="form-group" style="text-align:right;"><label>البريد الإلكتروني</label><input type="email" id="email" class="form-control" required></div>
+        <div class="form-group" style="text-align:right;"><label>كلمة المرور</label><input type="password" id="password" class="form-control" required></div>
         <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">تسجيل الدخول</button>
         <p id="errorMsg" style="color:var(--danger); font-size:13px; margin-top:15px; display:none;"></p>
       </form>
     </div>
   </div>
 
-  <!-- Dashboard -->
   <div style="display:none; width:100%; height:100%;" id="dashboard">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-logo">M</div>
         <h2>لوحة مارو</h2>
       </div>
-      <button class="nav-btn active">📊 نظرة عامة</button>
-      <button class="nav-btn">🛍️ الطلبات</button>
-      <button class="nav-btn">📦 المنتجات</button>
-      <button class="nav-btn">⚙️ الإعدادات</button>
+      <button class="nav-btn active" data-view="dashboard">📊 نظرة عامة</button>
+      <button class="nav-btn" data-view="orders">🛍️ الطلبات</button>
+      <button class="nav-btn" data-view="products">📦 المنتجات والأكواد</button>
+      <button class="nav-btn" data-view="categories">📑 التصنيفات</button>
       <button class="nav-btn logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
     </aside>
 
     <main class="main">
       <div class="header">
-        <h1>نظرة عامة</h1>
-        <a href="index.html" class="btn btn-primary" style="text-decoration:none;">فتح المتجر ↗</a>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card green">
-          <h3>إجمالي المبيعات</h3>
-          <p id="statSales">$0.00</p>
-        </div>
-        <div class="stat-card orange">
-          <h3>الطلبات الجديدة</h3>
-          <p id="statOrders">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>المنتجات</h3>
-          <p id="statProducts">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>الأكواد المتاحة</h3>
-          <p id="statCodes">0</p>
+        <h1 id="pageTitle">نظرة عامة</h1>
+        <div class="top-actions">
+          <a href="index.html" class="btn btn-primary" style="text-decoration:none;">فتح المتجر ↗</a>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h2>أحدث الطلبات</h2>
+      <!-- Dashboard View -->
+      <section class="view" id="view-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card green"><h3>إجمالي المبيعات</h3><p id="statSales">$0.00</p></div>
+          <div class="stat-card orange"><h3>الطلبات الجديدة</h3><p id="statOrders">0</p></div>
+          <div class="stat-card"><h3>المنتجات</h3><p id="statProducts">0</p></div>
+          <div class="stat-card"><h3>التصنيفات</h3><p id="statCats">0</p></div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>رقم الطلب</th>
-              <th>العميل</th>
-              <th>الإجمالي</th>
-              <th>الحالة</th>
-              <th>إجراء</th>
-            </tr>
-          </thead>
-          <tbody id="ordersTable">
-            <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">جارٍ تحميل البيانات...</td></tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="card">
+          <div class="card-header"><h2>أحدث الطلبات</h2><button class="btn btn-secondary" onclick="switchView('orders')">عرض الكل</button></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="recentOrdersTable"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Orders View -->
+      <section class="view" id="view-orders" style="display:none;">
+        <div class="card">
+          <div class="card-header"><h2>جميع الطلبات</h2></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>المنتجات</th><th>الإجمالي</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products View -->
+      <section class="view" id="view-products" style="display:none;">
+        <div class="card">
+          <div class="card-header"><h2>المنتجات والأكواد</h2><button class="btn btn-primary" onclick="openProductModal()">+ إضافة منتج</button></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>المنتج</th><th>التصنيف</th><th>السعر</th><th>الأكواد المتاحة</th><th>إجراء</th></tr></thead><tbody id="productsTable"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Categories View -->
+      <section class="view" id="view-categories" style="display:none;">
+        <div class="card">
+          <div class="card-header"><h2>إدارة التصنيفات</h2><button class="btn btn-primary" onclick="addCategory()">+ إضافة تصنيف</button></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>اسم التصنيف</th><th>عدد المنتجات</th><th>إجراء</th></tr></thead><tbody id="catsTable"></tbody></table>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
+
+  <!-- Product Modal -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <div class="modal-head"><h2 id="productModalTitle">إضافة منتج</h2><button class="close" onclick="closeModal('productModal')">×</button></div>
+      <form id="productForm">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="form-group full"><label>اسم المنتج</label><input name="name" class="form-control" required></div>
+          <div class="form-group"><label>التصنيف</label><select name="category" id="productCategory" class="form-control" required></select></div>
+          <div class="form-group"><label>السعر بالدولار</label><input name="price" type="number" step="0.01" class="form-control" required></div>
+          <div class="form-group full"><label>الوصف</label><textarea name="description" class="form-control" required></textarea></div>
+          <div class="form-group full"><label>رابط الصورة</label><input name="image" type="url" class="form-control" required></div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">حفظ المنتج</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div class="modal" id="orderModal">
+    <div class="modal-content">
+      <div class="modal-head"><h2>تفاصيل الطلب</h2><button class="close" onclick="closeModal('orderModal')">×</button></div>
+      <div id="orderDetails"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -162,12 +213,13 @@
     
     const firebaseConfig={apiKey:'AIzaSyAZucoNuZyKDoxfS7tboc3-ZttqONuw_vw',authDomain:'maro-store-4dc09.firebaseapp.com',projectId:'maro-store-4dc09',storageBucket:'maro-store-4dc09.firebasestorage.app',messagingSenderId:'55163169834',appId:'1:55163169834:web:48ba5eda57e23c41886753',measurementId:'G-FZWPNG5XD3'};
     const auth = getAuth(initializeApp(firebaseConfig));
+    window.novaAdminGetToken = async () => auth.currentUser ? auth.currentUser.getIdToken() : null;
 
     onAuthStateChanged(auth, async user => {
       if (user) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboard').style.display = 'flex';
-        loadDashboardData(user);
+        window.syncAdminCloud();
       } else {
         document.getElementById('loginScreen').style.display = 'grid';
         document.getElementById('dashboard').style.display = 'none';
@@ -186,44 +238,212 @@
     };
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth);
+  </script>
 
-    async function loadDashboardData(user) {
-      const token = await user.getIdToken();
+  <script>
+    const KEY_PRODUCTS='nova_products_v1',KEY_CATS='nova_categories_v1',KEY_ORDERS='nova_orders_v1';
+    let products=load(KEY_PRODUCTS,[]), cats=load(KEY_CATS,['الكل']), orders=load(KEY_ORDERS,[]);
+    const $=s=>document.querySelector(s), money=n=>'$'+Number(n||0).toFixed(2);
+    
+    function load(k,f){try{const x=JSON.parse(localStorage.getItem(k));return Array.isArray(x)?x:f}catch{return f}}
+    function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+    function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500)}
+    function closeModal(id){$('#'+id).classList.remove('show')}
+    window.closeModal = closeModal;
+
+    const statusAr={pending:'جديد',paid:'مدفوع',processing:'قيد المعالجة',completed:'مكتمل',cancelled:'ملغي',failed:'فشل'};
+    const statusEn={جديد:'pending',مدفوع:'paid','قيد المعالجة':'processing',مكتمل:'completed',ملغي:'cancelled',فشل:'failed'};
+
+    window.syncAdminCloud = async () => {
+      const token = await window.novaAdminGetToken?.(); if(!token) return;
       try {
-        const [pr, or] = await Promise.all([
-          fetch('/api/admin/products', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('/api/admin/orders', { headers: { Authorization: `Bearer ${token}` } })
+        const headers = {Authorization: `Bearer ${token}`};
+        const [pr, cr, or] = await Promise.all([
+          fetch('/api/admin/products',{headers}), 
+          fetch('/api/categories',{headers}), 
+          fetch('/api/admin/orders',{headers})
         ]);
-        
-        const products = await pr.json();
-        const orders = await or.json();
+        if(pr.ok) products=await pr.json();
+        if(cr.ok) cats=['الكل',...(await cr.json())];
+        if(or.ok){
+          orders=(await or.json()).map(o=>({
+            ...o, customer:o.customer_name||o.customer,
+            date:o.created_at?new Date(o.created_at).toLocaleDateString('ar-EG'):'-',
+            status:statusAr[o.status]||o.status, total:Number(o.total)
+          }))
+        }
+        save(KEY_PRODUCTS,products); save(KEY_CATS,cats); save(KEY_ORDERS,orders);
+        renderAll();
+      } catch(err) { console.warn('Sync failed', err); }
+    };
 
-        if (!pr.ok || !or.ok) throw new Error('Unauthorized');
+    function switchView(view){
+      document.querySelectorAll('.view').forEach(x=>x.style.display='none');
+      document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+      $(`#view-${view}`).style.display='block';
+      document.querySelector(`.nav-btn[data-view="${view}"]`).classList.add('active');
+      const titles={dashboard:'نظرة عامة',orders:'إدارة الطلبات',products:'المنتجات والأكواد',categories:'التصنيفات'};
+      $('#pageTitle').innerText = titles[view];
+    }
+    window.switchView = switchView;
+    document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 
-        const totalSales = orders.reduce((a, o) => a + Number(o.total || 0), 0);
-        const pendingOrders = orders.filter(o => o.status === 'pending').length;
-        const totalCodes = products.reduce((a, p) => a + Number(p.available_codes || 0), 0);
+    function renderAll() {
+      // Dashboard
+      const total = orders.reduce((a,o) => a + Number(o.total||0), 0);
+      $('#statSales').innerText = money(total);
+      $('#statOrders').innerText = orders.filter(o => o.status === 'جديد').length;
+      $('#statProducts').innerText = products.length;
+      $('#statCats').innerText = cats.filter(c => c !== 'الكل').length;
+      
+      $('#recentOrdersTable').innerHTML = orders.slice(0, 5).map(o => `
+        <tr><td><b>${o.id}</b></td><td>${o.customer}</td><td>${money(o.total)}</td><td><span class="badge ${o.status==='مكتمل'?'completed':o.status==='ملغي'?'cancelled':'pending'}">${o.status}</span></td><td>${o.date}</td></tr>
+      `).join('') || '<tr><td colspan="5" style="text-align:center;">لا توجد طلبات.</td></tr>';
 
-        document.getElementById('statSales').textContent = '$' + totalSales.toFixed(2);
-        document.getElementById('statOrders').textContent = pendingOrders;
-        document.getElementById('statProducts').textContent = products.length;
-        document.getElementById('statCodes').textContent = totalCodes;
+      // Orders
+      $('#ordersTable').innerHTML = orders.map(o => `
+        <tr>
+          <td><b>${o.id}</b></td>
+          <td>${o.customer}<br><small style="color:var(--text-muted)">${o.phone||''}</small></td>
+          <td>${(o.items||[]).map(i=>i.name).join(', ')||'-'}</td>
+          <td style="color:var(--success); font-weight:900;">${money(o.total)}</td>
+          <td><span class="badge ${o.status==='مكتمل'?'completed':o.status==='ملغي'?'cancelled':'pending'}">${o.status}</span></td>
+          <td><button class="btn btn-primary btn-sm" onclick="viewOrder('${o.id}')">التفاصيل</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" style="text-align:center;">لا توجد طلبات.</td></tr>';
 
-        document.getElementById('ordersTable').innerHTML = orders.slice(0, 10).map(o => `
-          <tr>
-            <td><b>${o.id}</b></td>
-            <td>${o.customer_name || o.customer} <br><small style="color:var(--text-muted)">${o.phone}</small></td>
-            <td style="color:var(--success); font-weight:900;">$${Number(o.total).toFixed(2)}</td>
-            <td><span class="badge ${o.status}">${o.status === 'pending' ? 'جديد' : o.status}</span></td>
-            <td><button class="btn btn-primary" style="padding:5px 10px; font-size:12px;" onclick="alert('رقم الطلب: ${o.id}')">تفاصيل</button></td>
-          </tr>
-        `).join('') || '<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">لا توجد طلبات.</td></tr>';
+      // Products
+      $('#productsTable').innerHTML = products.map(p => `
+        <tr>
+          <td><div class="product-mini"><img src="${p.image}"><div><strong>${p.name}</strong></div></div></td>
+          <td>${p.category}</td>
+          <td>${money(p.price)}</td>
+          <td><b style="color:var(--primary)">${p.available_codes||0}</b> كود</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="openProductModal('${p.id}')">تعديل</button>
+            <button class="btn btn-secondary btn-sm" onclick="uploadCodes('${p.id}')">+ كود</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">حذف</button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" style="text-align:center;">لا توجد منتجات.</td></tr>';
+      fillCategoryOptions();
 
-      } catch (err) {
-        console.error(err);
-        alert('تعذر جلب البيانات. تأكد من أنك المدير.');
+      // Cats
+      $('#catsTable').innerHTML = cats.filter(c=>c!=='الكل').map(c => {
+        const n = products.filter(p=>p.category===c).length;
+        return `<tr><td><b>${c}</b></td><td>${n} منتج</td><td><button class="btn btn-danger btn-sm" onclick="deleteCat('${c}')">حذف</button></td></tr>`;
+      }).join('') || '<tr><td colspan="3" style="text-align:center;">لا توجد تصنيفات.</td></tr>';
+    }
+
+    function fillCategoryOptions(){
+      const html = cats.filter(c=>c!=='الكل').map(c=>`<option>${c}</option>`).join('');
+      $('#productCategory').innerHTML = html;
+    }
+
+    function openProductModal(id){
+      fillCategoryOptions();
+      const form = $('#productForm'); form.reset(); form.id.value = '';
+      $('#productModalTitle').innerText = 'إضافة منتج';
+      if(id){
+        const p = products.find(x => x.id === id); if(!p) return;
+        Object.keys(p).forEach(k => { if(form.elements[k]) form.elements[k].value = p[k]; });
+        $('#productModalTitle').innerText = 'تعديل منتج';
+      }
+      $('#productModal').classList.add('show');
+    }
+    window.openProductModal = openProductModal;
+
+    $('#productForm').onsubmit = async e => {
+      e.preventDefault();
+      const f = new FormData(e.target), id = f.get('id') || 'p' + Date.now();
+      const data = { id, name: f.get('name'), category: f.get('category'), price: Number(f.get('price')), description: f.get('description'), image: f.get('image'), tag: 'جديد' };
+      const token = await window.novaAdminGetToken?.();
+      const r = await fetch('/api/admin/products', { method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body: JSON.stringify(data) });
+      if(r.ok) {
+        const old = products.findIndex(p => p.id === id);
+        if(old >= 0) products[old] = {...products[old], ...data}; else products.unshift({...data, active:true, available_codes:0});
+        save(KEY_PRODUCTS, products); closeModal('productModal'); renderAll(); toast('تم الحفظ بنجاح');
+      } else toast('حدث خطأ أثناء الحفظ');
+    };
+
+    function uploadCodes(id){
+      const raw = prompt('ألصق الأكواد هنا، كود في كل سطر:');
+      if(!raw?.trim()) return;
+      (async () => {
+        const token = await window.novaAdminGetToken?.();
+        const r = await fetch(`/api/admin/products/${id}/codes`, { method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body: JSON.stringify({codes: raw}) });
+        const res = await r.json();
+        if(r.ok) { const p = products.find(x => x.id === id); if(p) p.available_codes = Number(p.available_codes||0) + Number(res.added||0); renderAll(); toast(`تم إضافة ${res.added} كود`); }
+        else toast('فشل رفع الأكواد');
+      })();
+    }
+    window.uploadCodes = uploadCodes;
+
+    function deleteProduct(id){
+      if(!confirm('هل أنت متأكد من الحذف؟')) return;
+      (async () => {
+        const token = await window.novaAdminGetToken?.();
+        const r = await fetch(`/api/admin/products/${id}`, { method:'DELETE', headers:{Authorization:`Bearer ${token}`} });
+        if(r.ok) { products = products.filter(p => p.id !== id); save(KEY_PRODUCTS, products); renderAll(); toast('تم الحذف'); }
+      })();
+    }
+    window.deleteProduct = deleteProduct;
+
+    async function addCategory(){
+      const name = prompt('اسم التصنيف الجديد:');
+      if(name && name.trim()) {
+        const token = await window.novaAdminGetToken?.();
+        const r = await fetch('/api/admin/categories', { method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body: JSON.stringify({name: name.trim()}) });
+        if(r.ok) { cats.push(name.trim()); save(KEY_CATS, cats); renderAll(); toast('تمت الإضافة'); }
       }
     }
+    window.addCategory = addCategory;
+
+    function deleteCat(c){
+      if(products.some(p => p.category === c)) return toast('لا يمكن حذف تصنيف مرتبط بمنتجات');
+      if(confirm('حذف التصنيف؟')) { cats = cats.filter(x => x !== c); save(KEY_CATS, cats); renderAll(); }
+    }
+    window.deleteCat = deleteCat;
+
+    function viewOrder(id){
+      const o = orders.find(x => x.id === id); if(!o) return;
+      $('#orderDetails').innerHTML = `
+        <div style="background:#0f172a; padding:15px; border-radius:8px; margin-bottom:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div><span style="color:var(--text-muted); font-size:12px; display:block;">رقم الطلب</span><strong>${o.id}</strong></div>
+          <div><span style="color:var(--text-muted); font-size:12px; display:block;">العميل</span><strong>${o.customer}</strong></div>
+          <div><span style="color:var(--text-muted); font-size:12px; display:block;">الهاتف</span><strong>${o.phone||'-'}</strong></div>
+        </div>
+        <h3 style="font-size:15px; margin-bottom:10px;">المنتجات</h3>
+        ${(o.items||[]).map(i => `<div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:10px 0; font-size:14px;"><span>${i.name} × ${i.qty}</span><b>${money(i.price*i.qty)}</b></div>`).join('')}
+        <div style="display:flex; justify-content:space-between; margin:20px 0; font-weight:900; font-size:18px;"><span>الإجمالي</span><span style="color:var(--success);">${money(o.total)}</span></div>
+        
+        <div class="form-group">
+          <label>تحديث حالة الطلب</label>
+          <select id="orderStatus" class="form-control">
+            <option ${o.status==='جديد'?'selected':''}>جديد</option>
+            <option ${o.status==='قيد المعالجة'?'selected':''}>قيد المعالجة</option>
+            <option ${o.status==='مكتمل'?'selected':''}>مكتمل</option>
+            <option ${o.status==='ملغي'?'selected':''}>ملغي</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="updateOrder('${o.id}')">حفظ التحديث</button>
+      `;
+      $('#orderModal').classList.add('show');
+    }
+    window.viewOrder = viewOrder;
+
+    function updateOrder(id){
+      const o = orders.find(x => x.id === id); if(!o) return;
+      (async () => {
+        const newStatus = $('#orderStatus').value;
+        const token = await window.novaAdminGetToken?.();
+        const r = await fetch(`/api/admin/orders/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body: JSON.stringify({status: statusEn[newStatus]}) });
+        if(r.ok) { o.status = newStatus; save(KEY_ORDERS, orders); closeModal('orderModal'); renderAll(); toast('تم تحديث الطلب'); }
+      })();
+    }
+    window.updateOrder = updateOrder;
+
+    renderAll();
   </script>
 </body>
 </html>
