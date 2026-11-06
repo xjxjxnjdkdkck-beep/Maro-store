@@ -13,7 +13,7 @@ const firebaseKeys = createRemoteJWKSet(new URL('https://www.googleapis.com/serv
 const databaseUrl = String(process.env.DATABASE_URL || '').trim();
 if (!databaseUrl) throw new Error('DATABASE_URL is required. Add the Aiven MySQL connection URL to Render Environment Variables.');
 const dbUrl = new URL(databaseUrl);
-const pool = mysql.createPool({ host: dbUrl.hostname, port: Number(dbUrl.port || 3306), user: decodeURIComponent(dbUrl.username), password: decodeURIComponent(dbUrl.password), database: dbUrl.pathname.replace(/^\//,''), waitForConnections: true, connectionLimit: 8, ssl: { rejectUnauthorized: false} });
+const pool = mysql.createPool({ host: dbUrl.hostname, port: Number(dbUrl.port || 3306), user: decodeURIComponent(dbUrl.username), password: decodeURIComponent(dbUrl.password), database: dbUrl.pathname.replace(/^\//,''), waitForConnections: true, connectionLimit: 8, ssl: { rejectUnauthorized: true } });
 const adminRate = new Map();
 
 const seedProducts = [
@@ -73,7 +73,7 @@ function adminUser(req, res, next) {
     if (recent.length >= 60) return res.status(429).json({error:'محاولات كثيرة، حاول بعد دقيقة.'});
     recent.push(now); adminRate.set(ip,recent);
     if (!configured) return res.status(503).json({error:'لم يتم إعداد بريد مدير المتجر بعد.'});
-    if (!req//.user.emailVerified) return res.status(403).json({error:'يجب تأكيد بريد المدير أولاً.'});
+    if (!req.user.emailVerified) return res.status(403).json({error:'يجب تأكيد بريد المدير أولاً.'});
     if (!req.user.email || req.user.email !== configured) return res.status(403).json({error:'هذا الحساب ليس لديه صلاحية الإدارة.'});
     next();
   });
@@ -106,6 +106,7 @@ app.post('/api/admin/import-product', adminUser, async (req,res)=>{ try { const 
 app.patch('/api/admin/products/:id', adminUser, async (req,res)=>{ const active=Boolean(req.body?.active); await pool.query('UPDATE nova_products SET active=? WHERE id=?',[active,req.params.id]); res.json({ok:true}); });
 app.delete('/api/admin/products/:id', adminUser, async (req,res)=>{ await pool.query('DELETE FROM nova_products WHERE id=?',[req.params.id]); res.json({ok:true}); });
 app.post('/api/admin/categories', adminUser, async (req,res)=>{ const name=String(req.body?.name||'').trim(); if(!name) return res.status(400).json({error:'اسم التصنيف مطلوب.'}); await pool.query('INSERT IGNORE INTO nova_categories (name) VALUES (?)',[name]); res.json({ok:true}); });
+app.delete('/api/admin/categories/:name', adminUser, async (req,res)=>{ const name=String(req.params.name||'').trim(); if(!name) return res.status(400).json({error:'اسم التصنيف مطلوب.'}); const [used]=await pool.query('SELECT COUNT(*) AS n FROM nova_products WHERE category=?',[name]); if(Number(used[0]?.n||0)>0) return res.status(409).json({error:'لا يمكن حذف تصنيف مرتبط بمنتجات.'}); await pool.query('DELETE FROM nova_categories WHERE name=?',[name]); res.json({ok:true}); });
 app.post('/api/admin/products/:id/codes', adminUser, async (req,res)=>{ const raw=String(req.body?.codes||''); const codes=[...new Set(raw.split(/\r?\n|,|;/).map(x=>x.trim()).filter(Boolean))]; if(!codes.length) return res.status(400).json({error:'لم يتم العثور على أكواد.'}); const [p]=await pool.query('SELECT id FROM nova_products WHERE id=?',[req.params.id]); if(!p.length) return res.status(404).json({error:'المنتج غير موجود.'}); const c=await pool.getConnection(); try { await c.beginTransaction(); for(const code of codes) await c.query('INSERT INTO nova_inventory_codes (product_id,code) VALUES (?,?)',[req.params.id,code]); await c.commit(); res.json({ok:true,added:codes.length}); } catch(e){ await c.rollback(); throw e; } finally { c.release(); } });
 app.get('/api/admin/orders', adminUser, async (_req,res)=>{ const [rows]=await pool.query('SELECT * FROM nova_orders ORDER BY created_at DESC'); for(const row of rows){ const [items]=await pool.query('SELECT product_id AS id,product_name AS name,qty,unit_price AS price FROM nova_order_items WHERE order_id=?',[row.id]); const [codes]=await pool.query('SELECT product_id,code FROM nova_order_codes WHERE order_id=?',[row.id]); row.items=items; row.codes=codes; } res.json(rows); });
 app.patch('/api/admin/orders/:id', adminUser, async (req,res)=>{ const allowed=new Set(['pending','paid','processing','completed','cancelled','failed']); const status=String(req.body?.status||''); if(!allowed.has(status)) return res.status(400).json({error:'حالة الطلب غير صحيحة.'}); await pool.query('UPDATE nova_orders SET status=? WHERE id=?',[status,req.params.id]); res.json({ok:true}); });
