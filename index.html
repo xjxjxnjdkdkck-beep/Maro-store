@@ -26,6 +26,12 @@
     <section id="productsSection"><div class="section-head"><h2>منتجاتنا</h2><div class="search">⌕ <input id="searchInput" placeholder="ابحث عن منتج..." autocomplete="off"></div></div><div class="categories" id="categories"></div><div class="products" id="products"></div></section>
     <footer class="footer"><span>© 2026 متجر مارو</span><span>شراء مباشر • تسليم سريع • دعم متواصل</span><span><a href="privacy.html">الخصوصية</a> • <a href="terms.html">الشروط والاستبدال</a> • <a class="admin-link" href="admin.html" aria-label="دخول الإدارة">دخول الإدارة</a></span></footer>
   </main>
+  
+  <!-- زر واتساب عائم -->
+  <a href="https://wa.me/962789026283?text=مرحباً،%20أحتاج%20مساعدة%20في%20متجر%20مارو" target="_blank" style="position:fixed; bottom:20px; left:20px; background:#25D366; color:white; width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow:0 4px 10px rgba(0,0,0,0.2); z-index:999; text-decoration:none; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    💬
+  </a>
+
   <div class="modal" id="authModal"><div class="modal-card"><div class="drawer-head"><h2>حساب متجر مارو</h2><button class="close" id="closeAuth">×</button></div><button class="google-btn" id="googleLogin" type="button">G تسجيل الدخول بواسطة Google</button><div class="auth-tabs"><button class="auth-tab active" data-auth-view="loginView">البريد الإلكتروني</button><button class="auth-tab" data-auth-view="signupView">إنشاء حساب</button></div><div class="auth-view active" id="loginView"><p>سجّل الدخول لمتابعة طلباتك بسهولة.</p><form id="loginCustomerForm"><div class="field"><label>البريد الإلكتروني</label><input id="customerLoginEmail" type="email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input id="customerLoginPassword" type="password" required autocomplete="current-password"></div><button class="primary full" type="submit">دخول</button></form></div><div class="auth-view" id="signupView"><p>أنشئ حساباً جديداً في متجر مارو.</p><form id="signupCustomerForm"><div class="field"><label>الاسم</label><input id="customerSignupName" type="text" required autocomplete="name" placeholder="مثال: أحمد محمد"></div><div class="field"><label>البريد الإلكتروني</label><input id="customerSignupEmail" type="email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input id="customerSignupPassword" type="password" minlength="6" required autocomplete="new-password"></div><button class="primary full" type="submit">إنشاء الحساب</button></form></div><div class="auth-message" id="authMessage"></div></div></div>
   <div class="modal" id="ordersModal"><div class="modal-card"><div class="drawer-head"><h2>طلباتي</h2><button class="close" id="closeOrders">×</button></div><p>يمكنك متابعة حالة طلباتك والأكواد التي تم تسليمها.</p><div class="orders-list" id="ordersList"><p>جارٍ التحميل...</p></div></div></div><div class="modal" id="checkoutModal"><div class="modal-card" id="checkoutCard">
     <div class="drawer-head"><h2>تأكيد الطلب</h2><button class="close" id="closeModal">×</button></div><p>أدخل بيانات التواصل وسيظهر الطلب مباشرة في لوحة الإدارة.</p>
@@ -110,9 +116,8 @@
         const created=await orderResponse.json();
         if(!orderResponse.ok||!created.id)throw new Error(created.error||'تعذر إنشاء الطلب');
         
-        // 2. تجهيز رسالة الواتساب (الرقم الجديد 0789026283)
+        // 2. تجهيز رسالة الواتساب
         const waMessage = encodeURIComponent(`مرحباً متجر مارو 👋\nأود إتمام الدفع للطلب رقم: *${created.id}*\nالاسم: ${customerName}\nرقم الهاتف: ${phone}\nالإجمالي: *${money(created.total)}*\n\nسأرفق صورة إشعار التحويل الآن.`);
-        // تحويل الرقم للصيغة الدولية (نفترض +962 للأردن)
         const waUrl = `https://wa.me/962789026283?text=${waMessage}`;
         
         // 3. تغيير شكل النافذة لرسالة النجاح والتحويل للواتساب
