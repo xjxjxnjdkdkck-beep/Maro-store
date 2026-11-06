@@ -27,10 +27,17 @@
     <footer class="footer"><span>© 2026 متجر مارو</span><span>شراء مباشر • تسليم سريع • دعم متواصل</span><span><a href="privacy.html">الخصوصية</a> • <a href="terms.html">الشروط والاستبدال</a> • <a class="admin-link" href="admin.html" aria-label="دخول الإدارة">دخول الإدارة</a></span></footer>
   </main>
   <div class="modal" id="authModal"><div class="modal-card"><div class="drawer-head"><h2>حساب متجر مارو</h2><button class="close" id="closeAuth">×</button></div><button class="google-btn" id="googleLogin" type="button">G تسجيل الدخول بواسطة Google</button><div class="auth-tabs"><button class="auth-tab active" data-auth-view="loginView">البريد الإلكتروني</button><button class="auth-tab" data-auth-view="signupView">إنشاء حساب</button></div><div class="auth-view active" id="loginView"><p>سجّل الدخول لمتابعة طلباتك بسهولة.</p><form id="loginCustomerForm"><div class="field"><label>البريد الإلكتروني</label><input id="customerLoginEmail" type="email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input id="customerLoginPassword" type="password" required autocomplete="current-password"></div><button class="primary full" type="submit">دخول</button></form></div><div class="auth-view" id="signupView"><p>أنشئ حساباً جديداً في متجر مارو.</p><form id="signupCustomerForm"><div class="field"><label>الاسم</label><input id="customerSignupName" type="text" required autocomplete="name" placeholder="مثال: أحمد محمد"></div><div class="field"><label>البريد الإلكتروني</label><input id="customerSignupEmail" type="email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input id="customerSignupPassword" type="password" minlength="6" required autocomplete="new-password"></div><button class="primary full" type="submit">إنشاء الحساب</button></form></div><div class="auth-message" id="authMessage"></div></div></div>
-  <div class="modal" id="ordersModal"><div class="modal-card"><div class="drawer-head"><h2>طلباتي</h2><button class="close" id="closeOrders">×</button></div><p>يمكنك متابعة حالة طلباتك والأكواد التي تم تسليمها.</p><div class="orders-list" id="ordersList"><p>جارٍ التحميل...</p></div></div></div><div class="modal" id="checkoutModal"><div class="modal-card"><div class="drawer-head"><h2>تأكيد الطلب</h2><button class="close" id="closeModal">×</button></div><p>أدخل بيانات التواصل وسيظهر الطلب مباشرة في لوحة الإدارة.</p>
-    <!-- إضافة ملخص الطلب هنا -->
+  <div class="modal" id="ordersModal"><div class="modal-card"><div class="drawer-head"><h2>طلباتي</h2><button class="close" id="closeOrders">×</button></div><p>يمكنك متابعة حالة طلباتك والأكواد التي تم تسليمها.</p><div class="orders-list" id="ordersList"><p>جارٍ التحميل...</p></div></div></div><div class="modal" id="checkoutModal"><div class="modal-card" id="checkoutCard">
+    <div class="drawer-head"><h2>تأكيد الطلب</h2><button class="close" id="closeModal">×</button></div><p>أدخل بيانات التواصل وسيظهر الطلب مباشرة في لوحة الإدارة.</p>
     <div id="checkoutSummary" style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:15px; display:none;"></div>
-    <div class="auth-message" id="checkoutMessage"></div><form id="checkoutForm" novalidate><div class="field"><label>الاسم الكامل</label><input name="name" type="text" autocomplete="name" required placeholder="مثال: محمد أحمد"></div><div class="field"><label>رقم الهاتف أو واتساب</label><input name="phone" type="text" inputmode="tel" autocomplete="tel" required placeholder="07xxxxxxxx"></div><div class="field"><label>ملاحظات (اختياري)</label><textarea name="note" placeholder="أي تفاصيل إضافية للطلب"></textarea></div><button class="primary full" type="submit">إرسال الطلب والدفع</button></form></div></div><div class="toast" id="toast"></div>
+    <div class="auth-message" id="checkoutMessage"></div>
+    <form id="checkoutForm" novalidate>
+        <div class="field"><label>الاسم الكامل</label><input name="name" type="text" autocomplete="name" required placeholder="مثال: محمد أحمد"></div>
+        <div class="field"><label>رقم الهاتف أو واتساب</label><input name="phone" type="text" inputmode="tel" autocomplete="tel" required placeholder="07xxxxxxxx"></div>
+        <div class="field"><label>ملاحظات (اختياري)</label><textarea name="note" placeholder="أي تفاصيل إضافية للطلب"></textarea></div>
+        <button class="primary full" type="submit" style="background:var(--green);">تأكيد الطلب والدفع</button>
+    </form>
+  </div></div><div class="toast" id="toast"></div>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
@@ -65,7 +72,6 @@
     const $=s=>document.querySelector(s),money=n=>'$'+Number(n).toFixed(2);function renderCats(){const list=[...new Set(cats)];$('#categories').innerHTML=list.map(c=>`<button class="cat ${c===activeCat?'active':''}" data-cat="${c}">${c}</button>`).join('');document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{activeCat=b.dataset.cat;renderCats();renderProducts()})}
     function renderProducts(){const q=$('#searchInput').value.trim().toLowerCase();const items=products.filter(p=>p.active&& (activeCat==='الكل'||p.category===activeCat)&&(!q||`${p.name} ${p.category} ${p.description}`.toLowerCase().includes(q)));$('#products').innerHTML=items.length?items.map(p=>`<article class="product"><div class="product-img" style="background-image:url('${p.image}')"><span class="tag">${p.tag||p.category}</span></div><div class="product-body"><h3>${p.name}</h3><p>${p.description}</p><div class="product-foot"><span class="price">${money(p.price)}</span><button class="add" aria-label="شراء مباشر" onclick="buyNow('${p.id}')">شراء الآن</button></div></div></article>`).join(''):'<div class="empty">لا توجد منتجات مطابقة لبحثك حالياً.</div>'}
     
-    // تحديث دالة الشراء عشان تظهر الفاتورة
     function buyNow(id){
       const p=products.find(x=>x.id===id);
       if(!p)return;
@@ -98,25 +104,39 @@
       if(phone.replace(/[\s()+\-]/g,'').length<6){box.textContent='اكتب رقم الهاتف أو واتساب بشكل صحيح.';box.classList.add('show');return}
       try{
         showToast('جارٍ تجهيز الطلب...');
+        
+        // 1. إنشاء الطلب في قاعدة البيانات
         const orderResponse=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({items:cart.map(x=>({id:x.id,qty:x.qty})),customerName,phone,note:String(fd.get('note')||'').trim()})});
         const created=await orderResponse.json();
         if(!orderResponse.ok||!created.id)throw new Error(created.error||'تعذر إنشاء الطلب');
         
-        const paymentResponse=await fetch('/api/paypal/create-order',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({orderId:created.id})});
-        const payment=await paymentResponse.json();
-        if(!paymentResponse.ok||!payment.approvalUrl)throw new Error(payment.error||'تعذر فتح PayPal. يرجى المحاولة لاحقاً أو التواصل مع الدعم.');
+        // 2. تجهيز رسالة الواتساب (الرقم الجديد 0789026283)
+        const waMessage = encodeURIComponent(`مرحباً متجر مارو 👋\nأود إتمام الدفع للطلب رقم: *${created.id}*\nالاسم: ${customerName}\nرقم الهاتف: ${phone}\nالإجمالي: *${money(created.total)}*\n\nسأرفق صورة إشعار التحويل الآن.`);
+        // تحويل الرقم للصيغة الدولية (نفترض +962 للأردن)
+        const waUrl = `https://wa.me/962789026283?text=${waMessage}`;
         
-        let paypalUrl;
-        try{paypalUrl=new URL(String(payment.approvalUrl).trim(),window.location.origin);if(!['http:','https:'].includes(paypalUrl.protocol))throw new Error()}catch{throw new Error('رابط PayPal غير صالح حالياً، حاول مرة أخرى.')}
-        cart=[];e.target.reset();window.location.href=paypalUrl.href
+        // 3. تغيير شكل النافذة لرسالة النجاح والتحويل للواتساب
+        const modalCard = document.querySelector('#checkoutModal .modal-card');
+        modalCard.innerHTML = `
+            <div style="text-align:center; padding: 20px 0;">
+                <div style="font-size:50px; margin-bottom:10px;">✅</div>
+                <h2 style="color:var(--green); margin-bottom:10px;">تم تسجيل طلبك بنجاح!</h2>
+                <p style="color:var(--ink); line-height:1.8; margin-bottom:20px;">
+                    لإتمام الدفع، يرجى تحويل مبلغ <b>${money(created.total)}</b> إلى محفظة <b>زين كاش / فاست باي</b> على الرقم:<br><br>
+                    <b style="font-size:22px; color:var(--blue); direction:ltr; display:inline-block; background:#eef4ff; padding:10px 20px; border-radius:10px;">0789026283</b><br><br>
+                    ثم أرسل لنا صورة الإشعار عبر الواتساب لتأكيد الطلب وتسليم الكود فوراً.
+                </p>
+                <a href="${waUrl}" target="_blank" class="primary" style="display:block; margin-top:10px; background:linear-gradient(135deg,#25D366,#128C7E); text-decoration:none; font-size:16px;">إرسال الإشعار عبر واتساب</a>
+                <button class="secondary" style="width:100%; margin-top:10px;" onclick="location.reload()">إغلاق</button>
+            </div>
+        `;
+        
       }catch(err){
         const message=err?.message||'تعذر إتمام الطلب';box.textContent=message;box.classList.add('show');showToast(message)
       } 
     };
     
     async function syncCloud(){try{const [pr,cr]=await Promise.all([fetch('/api/products'),fetch('/api/categories')]);if(pr.ok){products=await pr.json();save(KEY_PRODUCTS,products)}if(cr.ok){cats=['الكل',...(await cr.json())];save(KEY_CATS,cats)}renderCats();renderProducts()}catch(err){console.warn('Cloud sync unavailable',err)}}
-    async function handlePaypalReturn(){const query=new URLSearchParams(location.search);if(query.get('paypal')!=='success')return;const token=await window.novaGetToken?.();const orderIdValue=query.get('order'),paypalOrderId=query.get('token');if(!token||!orderIdValue||!paypalOrderId)return;try{showToast('جارٍ تأكيد الدفع وتسليم الأكواد...');const result=await fetch('/api/paypal/capture-order',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({orderId:orderIdValue,paypalOrderId})}).then(r=>r.json());if(result.ok){showToast('تم الدفع وتسليم الأكواد بنجاح');if(result.codes?.length)alert(`أكواد طلبك:\n\n${result.codes.map(x=>x.code).join('\n')}`);history.replaceState({},'',location.pathname)}}catch(err){showToast(err.message||'تعذر تأكيد الدفع')}}
-    window.novaHandlePaypalReturn=handlePaypalReturn;
     window.buyNow=buyNow;renderCats();renderProducts();syncCloud();
   </script>
 </body>
