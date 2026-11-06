@@ -7,508 +7,87 @@
   <title>متجر مارو | Maro Premium Store</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
-    
-    /* --- Global Design System --- */
     :root {
-      --primary: #0b5fff;
-      --primary-hover: #0044cc;
-      --primary-light: #eef4ff;
-      --accent: #ff6b00;
-      --accent-hover: #e85500;
-      
-      --bg: #fafbfc;
-      --surface: #ffffff;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --border: #f3f4f6;
-      
-      --radius-sm: 12px;
-      --radius-md: 20px;
-      --radius-lg: 32px;
-      
+      --primary: #0b5fff; --primary-hover: #0044cc; --primary-light: #eef4ff;
+      --accent: #ff6b00; --accent-hover: #e85500;
+      --bg: #fafbfc; --surface: #ffffff;
+      --text-main: #111827; --text-muted: #6b7280; --border: #f3f4f6;
+      --radius-sm: 12px; --radius-md: 20px; --radius-lg: 32px;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
       --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
       --shadow-lg: 0 25px 50px -12px rgba(0,0,0,0.1);
       --shadow-primary: 0 10px 25px -5px rgba(11, 95, 255, 0.3);
-      
       --font: 'Cairo', system-ui, -apple-system, sans-serif;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
     body {
       font-family: var(--font);
       background-color: var(--bg);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(11, 95, 255, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(255, 107, 0, 0.03) 0px, transparent 50%);
-      color: var(--text-main);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
+      background-image: radial-gradient(at 0% 0%, rgba(11, 95, 255, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(255, 107, 0, 0.03) 0px, transparent 50%);
+      color: var(--text-main); line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh;
     }
-
-    /* --- Header --- */
-    .header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
-    }
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text-main);
-    }
-    .logo-svg {
-      width: 40px;
-      height: 40px;
-      filter: drop-shadow(0 4px 10px rgba(11, 95, 255, 0.2));
-    }
-    .logo-text h1 {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      line-height: 1;
-    }
-    .logo-text span {
-      font-size: 10px;
-      color: var(--primary);
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-    
+    .header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; max-width: 1280px; margin: 0 auto; }
+    .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); }
+    .logo-svg { width: 40px; height: 40px; filter: drop-shadow(0 4px 10px rgba(11, 95, 255, 0.2)); }
+    .logo-text h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+    .logo-text span { font-size: 10px; color: var(--primary); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
     .nav-actions { display: flex; gap: 12px; align-items: center; }
-    .btn-icon {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: grid; place-items: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
-      font-size: 18px;
-      color: var(--text-main);
-    }
-    .btn-icon:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-      border-color: var(--primary-light);
-      transform: translateY(-2px);
-    }
-    .btn-admin {
-      padding: 0 20px; height: 44px;
-      border-radius: 22px;
-      background: var(--text-main);
-      color: white;
-      font-weight: 700;
-      text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-      transition: all 0.2s ease;
-      font-size: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .btn-admin:hover {
-      background: #000;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-
-    /* --- Hero Section --- */
-    .hero {
-      max-width: 1280px;
-      margin: 120px auto 60px;
-      padding: 0 24px;
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 60px;
-      align-items: center;
-    }
-    .hero-content h2 {
-      font-size: clamp(40px, 5vw, 64px);
-      font-weight: 900;
-      line-height: 1.15;
-      margin-bottom: 24px;
-      letter-spacing: -1.5px;
-    }
-    .hero-content h2 span {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: inline-block;
-    }
-    .hero-content p {
-      font-size: 18px;
-      color: var(--text-muted);
-      margin-bottom: 40px;
-      font-weight: 600;
-      max-width: 480px;
-      line-height: 1.8;
-    }
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px 36px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-      color: white;
-      font-weight: 800;
-      font-size: 17px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3);
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-    .btn-primary:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 15px 35px rgba(255, 107, 0, 0.4);
-    }
-    
-    .hero-visual {
-      position: relative;
-      perspective: 1200px;
-    }
-    .hero-card-3d {
-      background: linear-gradient(145deg, #0f172a, #1e3a8a);
-      border-radius: 36px;
-      padding: 48px;
-      color: white;
-      box-shadow: 0 40px 80px -20px rgba(15, 23, 42, 0.5);
-      transform: rotateY(-12deg) rotateX(6deg) scale(0.95);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255,255,255,0.1);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-card-3d::before {
-      content: '';
-      position: absolute;
-      width: 200px; height: 200px;
-      background: var(--primary);
-      filter: blur(90px);
-      top: -60px; right: -60px;
-      opacity: 0.7;
-    }
-    .hero-card-3d:hover {
-      transform: rotateY(0deg) rotateX(0deg) scale(1);
-    }
+    .btn-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--shadow-sm); font-size: 18px; color: var(--text-main); }
+    .btn-icon:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary-light); transform: translateY(-2px); }
+    .btn-admin { padding: 0 20px; height: 44px; border-radius: 22px; background: var(--text-main); color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .btn-admin:hover { background: #000; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .hero { max-width: 1280px; margin: 120px auto 60px; padding: 0 24px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; }
+    .hero-content h2 { font-size: clamp(40px, 5vw, 64px); font-weight: 900; line-height: 1.15; margin-bottom: 24px; letter-spacing: -1.5px; }
+    .hero-content h2 span { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+    .hero-content p { font-size: 18px; color: var(--text-muted); margin-bottom: 40px; font-weight: 600; max-width: 480px; line-height: 1.8; }
+    .btn-primary { display: inline-flex; align-items: center; justify-content: center; padding: 16px 36px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; font-weight: 800; font-size: 17px; border: none; cursor: pointer; box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3); transition: all 0.3s ease; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(255, 107, 0, 0.4); }
+    .hero-visual { position: relative; perspective: 1200px; }
+    .hero-card-3d { background: linear-gradient(145deg, #0f172a, #1e3a8a); border-radius: 36px; padding: 48px; color: white; box-shadow: 0 40px 80px -20px rgba(15, 23, 42, 0.5); transform: rotateY(-12deg) rotateX(6deg) scale(0.95); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+    .hero-card-3d::before { content: ''; position: absolute; width: 200px; height: 200px; background: var(--primary); filter: blur(90px); top: -60px; right: -60px; opacity: 0.7; }
+    .hero-card-3d:hover { transform: rotateY(0deg) rotateX(0deg) scale(1); }
     .hero-card-3d h3 { font-size: 20px; margin-bottom: 12px; color: #93c5fd; font-weight: 700; }
     .hero-card-3d h1 { font-size: 64px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px; }
     .hero-card-3d p { font-size: 15px; color: #cbd5e1; font-weight: 500; }
-
-    /* --- Products Section --- */
-    .section-header {
-      max-width: 1280px;
-      margin: 80px auto 40px;
-      padding: 0 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .section-header h2 {
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: -1px;
-    }
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 12px 24px;
-      width: 340px;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s ease;
-    }
-    .search-box:focus-within {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px var(--primary-light);
-    }
-    .search-box input {
-      border: none;
-      outline: none;
-      background: transparent;
-      width: 100%;
-      font-family: var(--font);
-      font-weight: 600;
-      font-size: 15px;
-      margin-right: 10px;
-    }
-
-    .categories {
-      max-width: 1280px;
-      margin: 0 auto 40px;
-      padding: 0 24px;
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .cat-btn {
-      padding: 12px 28px;
-      border-radius: 30px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-    }
+    .section-header { max-width: 1280px; margin: 80px auto 40px; padding: 0 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .section-header h2 { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
+    .search-box { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 30px; padding: 12px 24px; width: 340px; box-shadow: var(--shadow-sm); transition: all 0.3s ease; }
+    .search-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+    .search-box input { border: none; outline: none; background: transparent; width: 100%; font-family: var(--font); font-weight: 600; font-size: 15px; margin-right: 10px; }
+    .categories { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+    .cat-btn { padding: 12px 28px; border-radius: 30px; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
     .cat-btn:hover { background: var(--border); }
-    .cat-btn.active {
-      background: var(--text-main);
-      color: white;
-      border-color: var(--text-main);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-
-    .products-grid {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 24px 100px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 30px;
-    }
-    .product-card {
-      background: var(--surface);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: var(--shadow-md);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      border: 1px solid rgba(0,0,0,0.03);
-    }
-    .product-card:hover {
-      transform: translateY(-8px);
-      box-shadow: var(--shadow-lg);
-    }
-    .product-image {
-      height: 220px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-      transition: transform 0.6s ease;
-    }
+    .cat-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .products-grid { max-width: 1280px; margin: 0 auto; padding: 0 24px 80px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+    .product-card { background: var(--surface); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-md); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; position: relative; border: 1px solid rgba(0,0,0,0.03); }
+    .product-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+    .product-image { height: 220px; background-size: cover; background-position: center; position: relative; transition: transform 0.6s ease; }
     .product-card:hover .product-image { transform: scale(1.05); }
-    .product-tag {
-      position: absolute;
-      top: 16px; right: 16px;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 800;
-      box-shadow: var(--shadow-sm);
-    }
-    .product-info {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      background: var(--surface);
-      position: relative;
-    }
-    .product-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 8px;
-      color: var(--text-main);
-    }
-    .product-desc {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      flex: 1;
-      line-height: 1.6;
-    }
-    .product-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .product-price {
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--text-main);
-      font-family: system-ui, sans-serif;
-    }
-    .btn-buy {
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-buy:hover {
-      background: var(--primary);
-      color: white;
-      box-shadow: var(--shadow-primary);
-    }
-
-    /* --- Floating WhatsApp --- */
-    .wa-float {
-      position: fixed;
-      bottom: 30px; left: 30px;
-      background: #25D366;
-      color: white;
-      width: 65px; height: 65px;
-      border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
-      font-size: 32px;
-      box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-      z-index: 999;
-      text-decoration: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .wa-float:hover {
-      transform: scale(1.1) translateY(-5px);
-      box-shadow: 0 15px 35px rgba(37, 211, 102, 0.5);
-    }
-    .wa-float::before {
-      content: '';
-      position: absolute;
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      background: #25D366;
-      opacity: 0.4;
-      z-index: -1;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.4; }
-      100% { transform: scale(1.5); opacity: 0; }
-    }
-
-    /* --- Modals --- */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 1000;
-      display: none;
-      place-items: center;
-      padding: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+    .product-tag { position: absolute; top: 16px; right: 16px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); color: var(--text-main); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; box-shadow: var(--shadow-sm); }
+    .product-info { padding: 24px; display: flex; flex-direction: column; flex: 1; background: var(--surface); position: relative; }
+    .product-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
+    .product-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; flex: 1; line-height: 1.6; }
+    .product-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
+    .product-price { font-size: 22px; font-weight: 900; color: var(--text-main); font-family: system-ui, sans-serif; }
+    .btn-buy { background: var(--primary-light); color: var(--primary); padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s ease; }
+    .btn-buy:hover { background: var(--primary); color: white; box-shadow: var(--shadow-primary); }
+    .wa-float { position: fixed; bottom: 30px; left: 30px; background: #25D366; color: white; width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); z-index: 999; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .wa-float:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.5); }
+    .wa-float::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background: #25D366; opacity: 0.4; z-index: -1; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 0.4; } 100% { transform: scale(1.5); opacity: 0; } }
+    .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 1000; display: none; place-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
     .modal.show { display: grid; opacity: 1; }
-    .modal-content {
-      background: var(--surface);
-      border-radius: 28px;
-      padding: 36px;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-      transform: translateY(20px);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
+    .modal-content { background: var(--surface); border-radius: 28px; padding: 36px; width: 100%; max-width: 480px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; max-height: 90vh; overflow-y: auto; }
     .modal.show .modal-content { transform: translateY(0); }
-    
-    .close-modal {
-      position: absolute;
-      top: 24px; left: 24px;
-      background: var(--bg);
-      border: none;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      font-size: 20px;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.2s;
-      display: grid; place-items: center;
-    }
-    .close-modal:hover {
-      background: #fee2e2;
-      color: #ef4444;
-      transform: rotate(90deg);
-    }
-    
+    .close-modal { position: absolute; top: 24px; left: 24px; background: var(--bg); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; display: grid; place-items: center; }
+    .close-modal:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
     .form-group { margin-bottom: 20px; }
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--text-main);
-    }
-    .form-control {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      outline: none;
-      font-family: var(--font);
-      font-size: 15px;
-      background: var(--bg);
-      transition: all 0.2s ease;
-    }
-    .form-control:focus {
-      border-color: var(--primary);
-      background: var(--surface);
-      box-shadow: 0 0 0 4px var(--primary-light);
-    }
-    
-    .google-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      width: 100%;
-      padding: 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-bottom: 20px;
-      color: var(--text-main);
-      box-shadow: var(--shadow-sm);
-    }
-    .google-btn:hover {
-      background: var(--bg);
-      border-color: #cbd5e1;
-    }
-
-    /* --- Responsive --- */
+    .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+    .form-control { width: 100%; padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); outline: none; font-family: var(--font); font-size: 15px; background: var(--bg); transition: all 0.2s ease; }
+    .form-control:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px var(--primary-light); }
+    .google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 20px; color: var(--text-main); box-shadow: var(--shadow-sm); }
+    .google-btn:hover { background: var(--bg); border-color: #cbd5e1; }
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; text-align: center; margin: 100px auto 40px; gap: 40px; }
       .hero-content h2 { font-size: 40px; }
@@ -526,11 +105,7 @@
       .nav-actions .btn-admin span { display: none; }
       .nav-actions .btn-admin { padding: 0 16px; }
     }
-    
-    @media (max-width: 400px) {
-      .products-grid { grid-template-columns: 1fr; }
-      .product-image { height: 200px; }
-    }
+    @media (max-width: 400px) { .products-grid { grid-template-columns: 1fr; } .product-image { height: 200px; } }
   </style>
 </head>
 <body>
@@ -539,24 +114,14 @@
     <nav class="nav">
       <a href="#" class="logo-container">
         <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#0b5fff;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#0044cc;stop-opacity:1" />
-            </linearGradient>
-          </defs>
+          <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0b5fff;stop-opacity:1" /><stop offset="100%" style="stop-color:#0044cc;stop-opacity:1" /></linearGradient></defs>
           <path d="M50 5 L95 27 L95 73 L50 95 L5 73 L5 27 Z" fill="url(#grad)"/>
           <text x="50" y="68" font-family="Cairo" font-size="45" font-weight="900" fill="white" text-anchor="middle">M</text>
         </svg>
-        <div class="logo-text">
-          <h1>متجر مارو</h1>
-          <span>Premium Store</span>
-        </div>
+        <div class="logo-text"><h1>متجر مارو</h1><span>Premium Store</span></div>
       </a>
       <div class="nav-actions">
-        <a href="admin.html" class="btn-admin">
-          <span>لوحة التحكم</span> ⚙️
-        </a>
+        <a href="admin.html" class="btn-admin"><span>لوحة التحكم</span> ⚙️</a>
         <button class="btn-icon" id="userBtn" title="حسابي">👤</button>
       </div>
     </nav>
@@ -588,6 +153,36 @@
   <div class="categories" id="categories"></div>
   <div class="products-grid" id="productsGrid"></div>
 
+  <!-- الفوتر الاحترافي -->
+  <footer style="background:#0f172a; color:#94a3b8; padding:60px 24px 30px; border-top:1px solid #1e293b;">
+    <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+          <svg style="width:35px;height:35px;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L95 27 L95 73 L50 95 L5 73 L5 27 Z" fill="#0b5fff"/><text x="50" y="68" font-family="Cairo" font-size="45" font-weight="900" fill="white" text-anchor="middle">M</text></svg>
+          <h2 style="color:white; font-size:22px; font-weight:900; margin:0;">متجر مارو</h2>
+        </div>
+        <p style="font-size:14px; line-height:1.8;">منصتك الأولى للاشتراكات الرقمية والبطاقات والألعاب. تسليم فوري وأمان تام لعملائنا الكرام.</p>
+      </div>
+      
+      <div>
+        <h3 style="color:white; font-size:16px; font-weight:800; margin-bottom:15px;">روابط قانونية</h3>
+        <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:12px; font-size:14px;">
+          <li><a href="privacy.html" style="color:#94a3b8; text-decoration:none; transition:0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">سياسة الخصوصية</a></li>
+          <li><a href="terms.html" style="color:#94a3b8; text-decoration:none; transition:0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">الشروط والأحكام (الاستبدال والاسترجاع)</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 style="color:white; font-size:16px; font-weight:800; margin-bottom:15px;">الدعم الفني</h3>
+        <p style="font-size:14px; margin-bottom:15px;">لديك استفسار أو مشكلة؟ نحن هنا للمساعدة على مدار الساعة.</p>
+        <a href="https://wa.me/962795230369" target="_blank" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; background:#25D366; color:white; border-radius:10px; text-decoration:none; font-weight:700; font-size:14px; box-shadow:0 4px 15px rgba(37,211,102,0.3);">💬 تواصل عبر واتساب</a>
+      </div>
+    </div>
+    <div style="max-width:1280px; margin:40px auto 0; padding-top:20px; border-top:1px solid #1e293b; text-align:center; font-size:13px;">
+      © 2026 متجر مارو. جميع الحقوق محفوظة.
+    </div>
+  </footer>
+
   <a href="https://wa.me/962795230369?text=مرحباً%20متجر%20مارو،%20أحتاج%20مساعدة" target="_blank" class="wa-float">💬</a>
 
   <!-- Auth Modal -->
@@ -595,24 +190,17 @@
     <div class="modal-content">
       <button class="close-modal" onclick="closeModal('authModal')">×</button>
       <h2 style="text-align:center; margin-bottom:25px; font-weight:900; font-size:24px;">حسابك في متجر مارو</h2>
-      
-      <button class="google-btn" id="googleLoginBtn">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" alt="Google">
-        تسجيل الدخول بواسطة Google
-      </button>
+      <button class="google-btn" id="googleLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" alt="Google"> تسجيل الدخول بواسطة Google</button>
       <div style="text-align:center; color:var(--text-muted); margin-bottom:20px; font-size:13px; font-weight:600;">أو بالبريد الإلكتروني</div>
-
       <div style="display:flex; gap:8px; margin-bottom:24px; background:var(--bg); padding:6px; border-radius:14px;">
         <button class="tab-btn active" style="flex:1; padding:12px; border:none; border-radius:10px; font-weight:800; font-size:14px; background:white; box-shadow:0 2px 10px rgba(0,0,0,0.05); cursor:pointer; transition:0.2s;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
         <button class="tab-btn" style="flex:1; padding:12px; border:none; border-radius:10px; font-weight:800; font-size:14px; background:transparent; color:var(--text-muted); cursor:pointer; transition:0.2s;" onclick="switchAuthTab('signup')">حساب جديد</button>
       </div>
-      
       <form id="loginForm" style="display:block;">
         <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="loginEmail" class="form-control" required></div>
         <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPassword" class="form-control" required></div>
         <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">دخول</button>
       </form>
-
       <form id="signupForm" style="display:none;">
         <div class="form-group"><label>الاسم الكامل</label><input type="text" id="signupName" class="form-control" required></div>
         <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="signupEmail" class="form-control" required></div>
@@ -629,9 +217,7 @@
       <button class="close-modal" onclick="closeModal('checkoutModal')">×</button>
       <h2 style="font-weight:900; margin-bottom:8px; font-size:24px;">إتمام الطلب</h2>
       <p style="color:var(--text-muted); font-size:14px; margin-bottom:24px; font-weight:600;">يرجى إدخال بياناتك وسنقوم بالتواصل معك لإتمام الدفع.</p>
-      
       <div id="orderSummary" style="background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:24px;"></div>
-      
       <form id="checkoutForm">
         <div class="form-group"><label>الاسم الكامل</label><input type="text" id="custName" class="form-control" required placeholder="مثال: أحمد محمد"></div>
         <div class="form-group"><label>رقم الهاتف / واتساب</label><input type="tel" id="custPhone" class="form-control" required placeholder="07xxxxxxxx"></div>
@@ -641,225 +227,29 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    
     const firebaseConfig={apiKey:'AIzaSyAZucoNuZyKDoxfS7tboc3-ZttqONuw_vw',authDomain:'maro-store-4dc09.firebaseapp.com',projectId:'maro-store-4dc09',storageBucket:'maro-store-4dc09.firebasestorage.app',messagingSenderId:'55163169834',appId:'1:55163169834:web:48ba5eda57e23c41886753',measurementId:'G-FZWPNG5XD3'};
-    const auth = getAuth(initializeApp(firebaseConfig));
-    const provider = new GoogleAuthProvider();
-    
+    const auth = getAuth(initializeApp(firebaseConfig)); const provider = new GoogleAuthProvider();
     window.novaGetToken = async () => auth.currentUser ? auth.currentUser.getIdToken() : null;
-    
-    onAuthStateChanged(auth, user => {
-      const btn = document.getElementById('userBtn');
-      if (user) {
-        btn.innerHTML = '🚪';
-        btn.title = 'تسجيل الخروج';
-        btn.onclick = () => { signOut(auth); showToast('تم تسجيل الخروج'); };
-      } else {
-        btn.innerHTML = '👤';
-        btn.title = 'تسجيل الدخول';
-        btn.onclick = () => document.getElementById('authModal').classList.add('show');
-      }
-    });
-
-    document.getElementById('googleLoginBtn').onclick = async () => {
-      try {
-        await signInWithPopup(auth, provider);
-        closeModal('authModal');
-        showToast('تم تسجيل الدخول بواسطة Google');
-      } catch (error) {
-        const errorDiv = document.getElementById('authError');
-        errorDiv.textContent = 'فشل تسجيل الدخول بجوجل، حاول مرة أخرى.';
-        errorDiv.style.display = 'block';
-      }
-    };
-
-    document.getElementById('loginForm').onsubmit = async (e) => {
-      e.preventDefault();
-      try {
-        await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
-        closeModal('authModal');
-        showToast('مرحباً بك مجدداً!');
-      } catch (err) {
-        const errorDiv = document.getElementById('authError');
-        errorDiv.textContent = 'البريد أو كلمة المرور غير صحيحة.';
-        errorDiv.style.display = 'block';
-      }
-    };
-
-    document.getElementById('signupForm').onsubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const res = await createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, document.getElementById('signupPassword').value);
-        await updateProfile(res.user, { displayName: document.getElementById('signupName').value });
-        closeModal('authModal');
-        showToast('تم إنشاء الحساب بنجاح!');
-      } catch (err) {
-        const errorDiv = document.getElementById('authError');
-        errorDiv.textContent = err.message.includes('email-already-in-use') ? 'البريد مستخدم مسبقاً.' : 'حدث خطأ، تأكد من البيانات.';
-        errorDiv.style.display = 'block';
-      }
-    };
-
-    window.switchAuthTab = (type) => {
-      document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none';
-      document.getElementById('signupForm').style.display = type === 'signup' ? 'block' : 'none';
-      document.querySelectorAll('.tab-btn').forEach((b, i) => {
-        b.style.background = (i === 0 && type === 'login') || (i === 1 && type === 'signup') ? 'white' : 'transparent';
-        b.style.boxShadow = (i === 0 && type === 'login') || (i === 1 && type === 'signup') ? '0 2px 10px rgba(0,0,0,0.05)' : 'none';
-        b.style.color = (i === 0 && type === 'login') || (i === 1 && type === 'signup') ? 'var(--text-main)' : 'var(--text-muted)';
-      });
-      document.getElementById('authError').style.display = 'none';
-    };
+    onAuthStateChanged(auth, user => { const btn = document.getElementById('userBtn'); if (user) { btn.innerHTML = '🚪'; btn.title = 'تسجيل الخروج'; btn.onclick = () => { signOut(auth); showToast('تم تسجيل الخروج'); }; } else { btn.innerHTML = '👤'; btn.title = 'تسجيل الدخول'; btn.onclick = () => document.getElementById('authModal').classList.add('show'); } });
+    document.getElementById('googleLoginBtn').onclick = async () => { try { await signInWithPopup(auth, provider); closeModal('authModal'); showToast('تم تسجيل الدخول بواسطة Google'); } catch (error) { const errorDiv = document.getElementById('authError'); errorDiv.textContent = 'فشل تسجيل الدخول بجوجل، حاول مرة أخرى.'; errorDiv.style.display = 'block'; } };
+    document.getElementById('loginForm').onsubmit = async (e) => { e.preventDefault(); try { await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); closeModal('authModal'); showToast('مرحباً بك مجدداً!'); } catch (err) { const errorDiv = document.getElementById('authError'); errorDiv.textContent = 'البريد أو كلمة المرور غير صحيحة.'; errorDiv.style.display = 'block'; } };
+    document.getElementById('signupForm').onsubmit = async (e) => { e.preventDefault(); try { const res = await createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, document.getElementById('signupPassword').value); await updateProfile(res.user, { displayName: document.getElementById('signupName').value }); closeModal('authModal'); showToast('تم إنشاء الحساب بنجاح!'); } catch (err) { const errorDiv = document.getElementById('authError'); errorDiv.textContent = err.message.includes('email-already-in-use') ? 'البريد مستخدم مسبقاً.' : 'حدث خطأ، تأكد من البيانات.'; errorDiv.style.display = 'block'; } };
+    window.switchAuthTab = (type) => { document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none'; document.getElementById('signupForm').style.display = type === 'signup' ? 'block' : 'none'; document.querySelectorAll('.tab-btn').forEach((b, i) => { b.style.background = (i === 0 && type === 'login') || (i === 1 && type === 'signup') ? 'white' : 'transparent'; b.style.boxShadow = (i === 0 && type === 'login') || (i === 1 && type === 'signup') ? '0 2px 10px rgba(0,0,0,0.05)' : 'none'; b.style.color = (i === 0 && type === 'login') || (i === 1 && type === 'signup') ? 'var(--text-main)' : 'var(--text-muted)'; }); document.getElementById('authError').style.display = 'none'; };
   </script>
-
-  <!-- App Logic -->
   <script>
-    const $ = s => document.querySelector(s);
-    const money = n => '$' + Number(n).toFixed(2);
-    let products = [], categories = [], activeCat = 'الكل', currentCart = null;
-
-    function showToast(msg) {
-      const toast = document.createElement('div');
-      toast.textContent = msg;
-      toast.style.cssText = 'position:fixed; bottom:30px; right:50%; transform:translateX(50%) translateY(20px); background:#111827; color:white; padding:14px 28px; border-radius:12px; font-weight:700; font-size:14px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.2); transition:0.3s; opacity:0;';
-      document.body.appendChild(toast);
-      setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(50%) translateY(0)'; }, 10);
-      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(50%) translateY(20px)'; setTimeout(() => toast.remove(), 300); }, 3000);
-    }
-    
+    const $ = s => document.querySelector(s); const money = n => '$' + Number(n).toFixed(2); let products = [], categories = [], activeCat = 'الكل', currentCart = null;
+    function showToast(msg) { const toast = document.createElement('div'); toast.textContent = msg; toast.style.cssText = 'position:fixed; bottom:30px; right:50%; transform:translateX(50%) translateY(20px); background:#111827; color:white; padding:14px 28px; border-radius:12px; font-weight:700; font-size:14px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.2); transition:0.3s; opacity:0;'; document.body.appendChild(toast); setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(50%) translateY(0)'; }, 10); setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(50%) translateY(20px)'; setTimeout(() => toast.remove(), 300); }, 3000); }
     window.closeModal = id => $('#' + id).classList.remove('show');
-
-    async function loadData() {
-      try {
-        const [pr, cr] = await Promise.all([fetch('/api/products'), fetch('/api/categories')]);
-        if (pr.ok) products = await pr.json();
-        if (cr.ok) categories = ['الكل', ...(await cr.json())];
-        renderCategories();
-        renderProducts();
-      } catch (err) {
-        products = [
-          {id:'p1',name:'Netflix Premium 4K',category:'اشتراكات',price:4.5,description:'شهر كامل - حساب خاص',tag:'عرض',image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=600&q=80',active:true},
-          {id:'p2',name:'PUBG Mobile UC',category:'ألعاب',price:2.99,description:'شحن فوري وآمن',tag:'الأكثر طلباً',image:'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80',active:true}
-        ];
-        categories = ['الكل', 'اشتراكات', 'ألعاب'];
-        renderCategories();
-        renderProducts();
-      }
-    }
-
-    function renderCategories() {
-      $('#categories').innerHTML = categories.map(c => 
-        `<button class="cat-btn ${c === activeCat ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
-      ).join('');
-    }
-
+    async function loadData() { try { const [pr, cr] = await Promise.all([fetch('/api/products'), fetch('/api/categories')]); if (pr.ok) products = await pr.json(); if (cr.ok) categories = ['الكل', ...(await cr.json())]; renderCategories(); renderProducts(); } catch (err) { products = [{id:'p1',name:'Netflix Premium 4K',category:'اشتراكات',price:4.5,description:'شهر كامل - حساب خاص',tag:'عرض',image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=600&q=80',active:true},{id:'p2',name:'PUBG Mobile UC',category:'ألعاب',price:2.99,description:'شحن فوري وآمن',tag:'الأكثر طلباً',image:'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80',active:true}]; categories = ['الكل', 'اشتراكات', 'ألعاب']; renderCategories(); renderProducts(); } }
+    function renderCategories() { $('#categories').innerHTML = categories.map(c => `<button class="cat-btn ${c === activeCat ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`).join(''); }
     window.setCat = (c) => { activeCat = c; renderCategories(); renderProducts(); };
-
-    function renderProducts() {
-      const q = $('#searchInput').value.toLowerCase();
-      const filtered = products.filter(p => p.active && (activeCat === 'الكل' || p.category === activeCat) && (p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)));
-      
-      if (filtered.length === 0) {
-        $('#productsGrid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted); font-weight:800; font-size:18px;">لا توجد منتجات مطابقة.</div>';
-        return;
-      }
-
-      $('#productsGrid').innerHTML = filtered.map(p => `
-        <article class="product-card">
-          <div class="product-image" style="background-image:url('${p.image}')">
-            <span class="product-tag">${p.tag || p.category}</span>
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">${p.name}</h3>
-            <p class="product-desc">${p.description}</p>
-            <div class="product-bottom">
-              <span class="product-price">${money(p.price)}</span>
-              <button class="btn-buy" onclick="buyNow('${p.id}')">شراء الآن</button>
-            </div>
-          </div>
-        </article>
-      `).join('');
-    }
-
+    function renderProducts() { const q = $('#searchInput').value.toLowerCase(); const filtered = products.filter(p => p.active && (activeCat === 'الكل' || p.category === activeCat) && (p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))); if (filtered.length === 0) { $('#productsGrid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted); font-weight:800; font-size:18px;">لا توجد منتجات مطابقة.</div>'; return; } $('#productsGrid').innerHTML = filtered.map(p => `<article class="product-card"><div class="product-image" style="background-image:url('${p.image}')"><span class="product-tag">${p.tag || p.category}</span></div><div class="product-info"><h3 class="product-title">${p.name}</h3><p class="product-desc">${p.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="btn-buy" onclick="buyNow('${p.id}')">شراء الآن</button></div></div></article>`).join(''); }
     $('#searchInput').oninput = renderProducts;
-
-    window.buyNow = (id) => {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      currentCart = p;
-      $('#orderSummary').innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
-          <span style="font-weight:700; color:var(--text-main);">${p.name}</span>
-          <span style="font-weight:800; font-family:sans-serif;">${money(p.price)}</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; border-top:1px dashed #cbd5e1; padding-top:16px; font-weight:900; color:var(--primary); font-size:18px;">
-          <span>الإجمالي</span>
-          <span style="font-family:sans-serif;">${money(p.price)}</span>
-        </div>
-      `;
-      $('#checkoutModal').classList.add('show');
-    };
-
-    $('#checkoutForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const token = await window.novaGetToken?.();
-      if (!token) {
-        closeModal('checkoutModal');
-        showToast('يجب تسجيل الدخول أولاً');
-        document.getElementById('authModal').classList.add('show');
-        return;
-      }
-
-      const name = $('#custName').value.trim();
-      const phone = $('#custPhone').value.trim();
-      const note = $('#custNote').value.trim();
-
-      if (name.length < 2 || phone.length < 6) return showToast('تأكد من إدخال البيانات بشكل صحيح');
-
-      try {
-        const btn = e.target.querySelector('button[type="submit"]');
-        btn.textContent = 'جارٍ تجهيز الطلب...';
-        btn.disabled = true;
-
-        const r = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ items: [{ id: currentCart.id, qty: 1 }], customerName: name, phone, note })
-        });
-        
-        const order = await r.json();
-        if (!r.ok) throw new Error(order.error || 'فشل في إنشاء الطلب');
-
-        const waMsg = encodeURIComponent(`مرحباً متجر مارو 👋\nأود إتمام الدفع للطلب رقم: *${order.id}*\nالاسم: ${name}\nرقم الهاتف: ${phone}\nالإجمالي: *${money(order.total)}*\n\nسأرفق صورة إشعار التحويل الآن.`);
-        const waUrl = `https://wa.me/962795230369?text=${waMsg}`;
-
-        $('#checkoutContent').innerHTML = `
-          <div style="text-align:center; padding:20px 0;">
-            <div style="width:80px; height:80px; background:#ecfdf5; color:#10b981; font-size:40px; display:grid; place-items:center; border-radius:50%; margin:0 auto 24px;">✓</div>
-            <h2 style="font-weight:900; font-size:26px; margin-bottom:12px;">تم تسجيل طلبك بنجاح!</h2>
-            <p style="color:var(--text-muted); font-size:15px; margin-bottom:30px; line-height:1.8; font-weight:600;">
-              لإتمام العملية، يرجى تحويل مبلغ <b>${money(order.total)}</b> إلى محفظة <b>زين كاش / فاست باي</b> على الرقم:
-            </p>
-            <div style="background:var(--bg); border:2px dashed #cbd5e1; padding:16px; border-radius:16px; font-size:26px; font-weight:900; color:var(--primary); letter-spacing:2px; margin-bottom:30px; font-family:sans-serif;">
-              0795230369
-            </div>
-            <a href="${waUrl}" target="_blank" class="btn-primary" style="display:flex; justify-content:center; align-items:center; gap:10px; width:100%; background:linear-gradient(135deg,#25D366,#128C7E); box-shadow:0 10px 25px rgba(37,211,102,0.3);">
-              💬 إرسال إشعار التحويل عبر واتساب
-            </a>
-            <button onclick="location.reload()" style="width:100%; margin-top:15px; padding:12px; background:transparent; border:none; color:var(--text-muted); font-weight:800; cursor:pointer; font-size:15px;">إغلاق</button>
-          </div>
-        `;
-      } catch (err) {
-        showToast(err.message);
-        e.target.querySelector('button[type="submit"]').textContent = 'تأكيد الطلب والدفع';
-        e.target.querySelector('button[type="submit"]').disabled = false;
-      }
-    };
-
+    window.buyNow = (id) => { const p = products.find(x => x.id === id); if (!p) return; currentCart = p; $('#orderSummary').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;"><span style="font-weight:700; color:var(--text-main);">${p.name}</span><span style="font-weight:800; font-family:sans-serif;">${money(p.price)}</span></div><div style="display:flex; justify-content:space-between; border-top:1px dashed #cbd5e1; padding-top:16px; font-weight:900; color:var(--primary); font-size:18px;"><span>الإجمالي</span><span style="font-family:sans-serif;">${money(p.price)}</span></div>`; $('#checkoutModal').classList.add('show'); };
+    $('#checkoutForm').onsubmit = async (e) => { e.preventDefault(); const token = await window.novaGetToken?.(); if (!token) { closeModal('checkoutModal'); showToast('يجب تسجيل الدخول أولاً'); document.getElementById('authModal').classList.add('show'); return; } const name = $('#custName').value.trim(); const phone = $('#custPhone').value.trim(); const note = $('#custNote').value.trim(); if (name.length < 2 || phone.length < 6) return showToast('تأكد من إدخال البيانات بشكل صحيح'); try { const btn = e.target.querySelector('button[type="submit"]'); btn.textContent = 'جارٍ تجهيز الطلب...'; btn.disabled = true; const r = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ items: [{ id: currentCart.id, qty: 1 }], customerName: name, phone, note }) }); const order = await r.json(); if (!r.ok) throw new Error(order.error || 'فشل في إنشاء الطلب'); const waMsg = encodeURIComponent(`مرحباً متجر مارو 👋\nأود إتمام الدفع للطلب رقم: *${order.id}*\nالاسم: ${name}\nرقم الهاتف: ${phone}\nالإجمالي: *${money(order.total)}*\n\nسأرفق صورة إشعار التحويل الآن.`); const waUrl = `https://wa.me/962795230369?text=${waMsg}`; $('#checkoutContent').innerHTML = `<div style="text-align:center; padding:20px 0;"><div style="width:80px; height:80px; background:#ecfdf5; color:#10b981; font-size:40px; display:grid; place-items:center; border-radius:50%; margin:0 auto 24px;">✓</div><h2 style="font-weight:900; font-size:26px; margin-bottom:12px;">تم تسجيل طلبك بنجاح!</h2><p style="color:var(--text-muted); font-size:15px; margin-bottom:30px; line-height:1.8; font-weight:600;">لإتمام العملية، يرجى تحويل مبلغ <b>${money(order.total)}</b> إلى محفظة <b>زين كاش / فاست باي</b> على الرقم:</p><div style="background:var(--bg); border:2px dashed #cbd5e1; padding:16px; border-radius:16px; font-size:26px; font-weight:900; color:var(--primary); letter-spacing:2px; margin-bottom:30px; font-family:sans-serif;">0795230369</div><a href="${waUrl}" target="_blank" class="btn-primary" style="display:flex; justify-content:center; align-items:center; gap:10px; width:100%; background:linear-gradient(135deg,#25D366,#128C7E); box-shadow:0 10px 25px rgba(37,211,102,0.3);">💬 إرسال إشعار التحويل عبر واتساب</a><button onclick="location.reload()" style="width:100%; margin-top:15px; padding:12px; background:transparent; border:none; color:var(--text-muted); font-weight:800; cursor:pointer; font-size:15px;">إغلاق</button></div>`; } catch (err) { showToast(err.message); e.target.querySelector('button[type="submit"]').textContent = 'تأكيد الطلب والدفع'; e.target.querySelector('button[type="submit"]').disabled = false; } };
     loadData();
   </script>
 </body>
